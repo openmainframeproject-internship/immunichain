@@ -1,0 +1,93 @@
+/**
+ * New model file
+ */
+namespace org.acme.immunichain
+
+/**
+ * Participants go here
+ */
+abstract participant User identified by id{
+  o String id
+  o String name
+}
+
+participant Guardian extends User{
+}
+
+participant Child extends User{
+  --> Guardian guardian 
+  o String address
+  o String dob
+  --> MedProvider[] medproviders
+  --> MemOrg[] memorgs optional
+  --> Immunization[] immunizations
+}
+
+participant MedProvider extends User{
+}
+
+participant MemOrg extends User{
+}
+
+/**
+ *	Assets go here, need to clarify assets?
+ */
+asset Immunization identified by mid{
+  o String mid
+}
+
+/**
+ * Transactions go here
+ */
+//controller transactions go here
+transaction addGuardian identified by transactionId{
+  o String transactionId
+}
+transaction addMedProvider identified by transactionId{
+  o String transactionId
+}
+transaction authorizeMedProvider identified by transactionId{
+  o String transactionId
+}
+transaction addMember identified by transactionId{
+  o String transactionId
+}
+transaction authorizeMember identified by transactionId{
+  o String transactionId
+}
+transaction removeMemberAuth identified by transactionId{
+  o String transactionId
+}
+transaction assignOwndershiptoChild identified by transactionId{
+  o String transactionId
+}
+transaction addNewImmToForm identified by transactionId{
+  o String transactionId
+}
+
+transaction reqGuardianID identified by transactionId{
+  o String transactionId
+}
+transaction requestChildID identified by transactionId{
+  o String transactionId
+}
+transaction newChildForm identified by transactionId{
+  o String transactionId
+}
+transaction assignMedProvider identified by transactionId{
+  o String transactionId
+}
+transaction listImmunizations identified by transactionId{
+  o String transactionId
+}
+
+
+transaction reqMedID identified by transactionId{
+  o String transactionId
+}
+transaction addImmunizations identified by transactionId{
+  o String transactionId
+}
+transaction reqMemberID identified by transactionId{
+  o String transactionId
+}
