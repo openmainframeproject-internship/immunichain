@@ -1,1 +1,3 @@
-This is the readme file for the Business Network Definition created in Playground
+# Welcome to the IMMUNIchain network
+
+This is the sample network in which immunization records are stored and accessed!

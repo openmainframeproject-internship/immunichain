@@ -3,52 +3,52 @@
 namespace ibm.wsc.immunichain
 
 participant Guardian identified by gid {
-o String gid
-o String name
+	o String gid
+	o String name
 }
 
 participant MedProvider identified by medid {
-o String medid
-o String name
+	o String medid
+	o String name
 }
 
-participant Member identified by memid {
-o String memid
-o String name
+participant Member identified by name {
+	o String memid
+	o String name
 }
 
 abstract concept immunization {
-o String name
-o String provider
-o String imdate
+	o String name
+	o String provider
+	o String imdate
 }
 
 concept immunirecord extends immunization {}
 
 asset Childform identified by cid {
-o String cid
-o String name
-o String address
---> Guardian guardian
-o String dob
---> MedProvider [] medproviders
---> Member[] members
-o  immunirecord [] immunizations
+	o String cid
+	o String name
+	o String address
+	--> Guardian guardian
+	o String dob
+	--> MedProvider [] medproviders
+	--> Member [] members
+	o  immunirecord [] immunizations
 }
 
  
 transaction assignMedProvider identified by transactionId {
-o String transactionId
---> Guardian guardian
---> MedProvider medprovider
---> Childform childform
+	o String transactionId
+	--> Guardian guardian
+	--> MedProvider medprovider
+	--> Childform childform
 }
 
 transaction authMember identified by transactionId {
-o String transactionId
---> Guardian guardian
---> Member member
---> Childform childform
+	o String transactionId
+	--> Guardian guardian
+	--> Member member
+	--> Childform childform
 }
 
 transaction removeMemberAuth identified by transactionId {
@@ -66,9 +66,8 @@ transaction addImmunizations identified by transactionId{
 
 transaction updateChildForm identified by transactionId{
 	o String transactionId
-	o String name
-	o String address
-	o immunirecord [] vaccines
+	o String name optional
+	o String address optional
 	--> Childform childform
 }
 
