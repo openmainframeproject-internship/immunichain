@@ -12,7 +12,7 @@ participant MedProvider identified by medid {
 	o String name
 }
 
-participant Member identified by name {
+participant Member identified by memid {
 	o String memid
 	o String name
 }
@@ -31,11 +31,10 @@ asset Childform identified by cid {
 	o String address
 	--> Guardian guardian
 	o String dob
-	--> MedProvider [] medproviders
-	--> Member [] members
-	o  immunirecord [] immunizations
+	--> MedProvider [] medproviders optional
+	--> Member [] members optional
+	o  immunirecord [] immunizations optional
 }
-
  
 transaction assignMedProvider identified by transactionId {
 	o String transactionId

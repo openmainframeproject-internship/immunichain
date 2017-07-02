@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Assign a Medical Provider</h2>
+	<p>
+		<a href="{% url 'home' %}">Back to home</a>
+	</p>
+	<p>
+		{% if form %}
+			<form method="post">
+			{% csrf_token %}
+			{{form}}
+			<input type="submit" value="Submit" />
+			</form>
+		{% else %}
+			<form action = "{% url 'assignmed_submit' %}" method="post">
+				{% csrf_token %}
+				<input type="radio" name="child" value={{cid}} checked>{{child_name}}<br>
+				<select required name="newmed">
+				<option value="">-----------</option>
+				{% for name, username in avail_medproviders %}
+					<option value={{username}}>{{name}}</option>
+				</select>
+				{% endfor %}
+				<button type="submit">Assign medical provider</button>
+			</form>
+		{% endif %}
+	</p>
+
+{% endblock %}

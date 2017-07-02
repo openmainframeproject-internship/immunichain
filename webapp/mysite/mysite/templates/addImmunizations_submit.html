@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Add Immunizations!</h2>
+	<p>
+		<a href="{% url 'home' %}">Back to home</a>
+	</p>
+	<p>
+		{% if existing_record.0.name != 'default'%}
+			<h4>{{child_name}} already has the following vaccinations:</h4>
+				<ul style="list-style-type:square">
+					{% for field in existing_record %}
+						<li><strong>Name</strong>: {{field.name}}, <strong>Provider</strong>: {{meddict|get_item:field.provider}}, <strong>Date</strong>: {{field.imdate}}</li>
+					{% endfor %}
+				</ul>
+		{% endif %}
+		<h4>Submit Immunizations:</h4>
+		<form method="post">
+		{% csrf_token %}
+			<input type="radio" name="child" value={{cid}} checked>{{child_name}}
+			<p>
+			<table>
+				{{Immunirecord}}
+			</table>
+			</p>
+			<input type="submit" value="Submit" />
+		</form>
+	</p>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Deauthorize Member Organization</h2>
+	<p>
+		<a href="{% url 'home' %}">Back to home</a>
+	</p>
+	<p>
+		{% if form %}
+			<form method="post">
+			{% csrf_token %}
+			{{form}}
+			<input type="submit" value="Submit" />
+			</form>
+		{% else %}
+			{% if avail_members %}
+				<form action = "{% url 'deauth_member_submit' %}" method="post">
+				{% csrf_token %}
+				<input type="radio" name="child" value={{cid}} checked>{{child_name}}<br>
+				<select required name="newmember">
+				<option value="">-----------</option>
+				{% for name, username in avail_members %}
+					<option value={{username}}>{{name}}</option>
+				</select>
+				{% endfor %}
+				<button type="submit">Remove member authorization</button>
+				</form>
+			{% else %}
+				{{child_name}} is not in any member organization!
+			{% endif %}
+		{% endif %}
+	</p>
+
+{% endblock %}
