@@ -19,12 +19,30 @@
 		{% csrf_token %}
 			<input type="radio" name="child" value={{cid}} checked>{{child_name}}
 			<p>
-			<table>
-				{{Immunirecord}}
-			</table>
+				<table>
+				    <thead>
+				        {% for form in Immunirecord.forms %}
+				            {% if forloop.first %}
+				                {% for field in form %}
+				                    <th>{{ field.label_tag }}</th>
+				                {% endfor %}
+				            {% endif %}
+				    </thead>
+				    <tbody>
+				            <tr>
+				                {% for field in form %}
+				                    <td>{{ field }}</td>
+				                {% endfor %}
+				            </tr>
+				        {% endfor %}
+				    </tbody>
+				</table>
+			{{ Immunirecord.management_form }}
 			</p>
 			<input type="submit" value="Submit" />
 		</form>
 	</p>
 
 {% endblock %}
+
+

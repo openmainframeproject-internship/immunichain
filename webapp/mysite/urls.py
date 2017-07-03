@@ -24,18 +24,18 @@ urlpatterns = [
     url(r'^$', core_views.home, name='home'),
     url(r'^viewchild/$', core_views.viewchild, name='viewchild'),
 
-    url(r'^auth_member_select/$', core_views.auth_member_select, name='auth_member_select'),
-    url(r'^auth_member_select/submit$', core_views.auth_member_submit, name='auth_member_submit'),
+    url(r'^auth_select/$', core_views.auth_member_select, name='auth_member_select'),
+    url(r'^auth_select/submit$', core_views.auth_member_submit, name='auth_member_submit'),
 
-    url(r'^deauth_member_select/$', core_views.deauth_member_select, name='deauth_member_select'),
-    url(r'^deauth_member_select/submit$', core_views.deauth_member_submit, name='deauth_member_submit'),
+    url(r'^deauth_select/$', core_views.deauth_member_select, name='deauth_member_select'),
+    url(r'^deauth_select/submit$', core_views.deauth_member_submit, name='deauth_member_submit'),
 
 
-    url(r'^assignmed_select/$', core_views.assignmed_select, name='assignmed_select'),
-    url(r'^assignmed_select/submit$', core_views.assignmed_submit, name='assignmed_submit'),
+    url(r'^assign_select/$', core_views.assignmed_select, name='assignmed_select'),
+    url(r'^assign_select/submit$', core_views.assignmed_submit, name='assignmed_submit'),
 
-    url(r'^addImmunizations$', core_views.addImmunizations, name='addImmun'),
-    url(r'^addImmunizations/submit$', core_views.addImmunizations_submit, name='addImmun_submit'),
+    url(r'^add$', core_views.addImmunizations, name='addImmun'),
+    url(r'^add/submit$', core_views.addImmunizations_submit, name='addImmun_submit'),
 
     url(r'^success/$', core_views.success, name='success'),
     url(r'^failure/$', core_views.failure, name='failure'),

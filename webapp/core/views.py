@@ -73,7 +73,7 @@ def viewchild(request):
 				r = r.json()
 				userdict[guardian] = r["name"]
 			for record in vaccines:
-				if record['provider'] not in userdict.keys():
+				if record['provider'] not in userdict.keys() and record['provider']!='default':
 					r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'])
 					r = r.json()
 					userdict[record['provider']] = r["name"]
@@ -257,12 +257,8 @@ def addImmunizations_submit(request):
 	assert request.user.profile.role == "HEAL"
 	Immunirecord = formset_factory(Immunization, formset=RequiredFormSet, extra=5)
 	if request.method == "GET":
-		print "HELLO"
 		cid = request.GET.get('child_access')
-		print cid
 		form = NameForm(request.GET)
-		print "I'M HERE!"
-		print "NOW I'M HERE!"
 		h = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform")
 		h = h.json()
 		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
@@ -271,7 +267,7 @@ def addImmunizations_submit(request):
 		existing_record = chosen["immunizations"]
 		meddict = {}
 		for record in existing_record:
-			if record['provider'] not in meddict.keys():
+			if record['provider'] not in meddict.keys() and record['provider']!="default":
 				r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'])
 				r = r.json()
 				meddict[record['provider']] = r["name"]
@@ -288,7 +284,6 @@ def addImmunizations_submit(request):
 					d = {'name': form.cleaned_data.get('name'), 'provider': providerid, 'imdate':str(form.cleaned_data.get('date'))}
 					immunizations.append(d)
 			immunizations = json.dumps(immunizations)
-			print immunizations
 			d = {"childform": cid, "vaccines": immunizations}
 			r = requests.post("http://148.100.4.163:3000/api/ibm.wsc.immunichain.addImmunizations", data=d)
 			assert r.status_code == SUCCESS_CALL
@@ -365,11 +360,9 @@ def signup(request):
 			raw_password= form.cleaned_data.get('password1')
 			user=authenticate(username=user.username,password=raw_password)
 			login(request,user)
-			
 			return redirect('home')
 	else:
 		form = SignUpForm()
-
 	return render(request, 'signup.html', {'form':form})
 
 

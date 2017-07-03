@@ -15,7 +15,7 @@ class SignUpForm(UserCreationForm):
 class NameForm(forms.Form):
 	def __init__(self, choices, *args, **kwargs):
 		super(NameForm, self).__init__(*args, **kwargs)
-		self.fields["child_access"] = forms.ChoiceField(choices=choices, label="Select child")
+		self.fields["child_access"] = forms.ChoiceField(choices=choices, label="Select")
 
 class NewChildForm(forms.Form):
 	def __init__(self, medproviders, members, *args, **kwargs):
