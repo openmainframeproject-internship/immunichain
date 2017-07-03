@@ -296,43 +296,37 @@ def addImmunizations_submit(request):
 @login_required
 def newchild(request):
 	assert request.user.profile.role == 'GRDN'
-	medproviders = []
-	members = []
-	r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider")
-	for provider in r.json():
-		medproviders.append((provider['medid'], provider['name']))
-	r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Member")
-	for member in r.json():
-		members.append((member['memid'], member['name']))
 	if request.method == 'POST':
-		form = NewChildForm(medproviders, members, request.POST)
+		form = NewChildForm(request.POST)
 		if form.is_valid():
+			child = form.save()
 			cid = form.cleaned_data.get('username')
 			name = form.cleaned_data.get('full_name')
 			address = form.cleaned_data.get('address')
 			guardian = request.user.username
-			dob = form.cleaned_data.get('birth_date')
-			medproviders = form.cleaned_data.get('medproviders')
+			dob = form.cleaned_data.get('birthdate')
+			medproviders = form.cleaned_data.get('medproviders') 
 			members = form.cleaned_data.get('members')
 			medproviders = json.dumps(medproviders)
 			members = json.dumps(members)
 			default = json.dumps([{"name": "default", "provider": "default", "imdate": "default"}])
-
 			d = {'cid':cid, 'name':name, 'address':address, "guardian":guardian, 'dob':dob, 
 			'medproviders': medproviders, 'members':members, "immunizations": default }
 			r = requests.post("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", data=d)
+			print r
 			if r.status_code == SUCCESS_CALL:
 				return redirect('success')
 			else:
 				return redirect('failure')
 	else:
-		form = NewChildForm(medproviders, members)
+		form = NewChildForm()
 
 	return render(request, 'newchild.html', {'form':form})
 
 def signup(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
+		print "HELLO"
 		if form.is_valid():
 			role = form.cleaned_data.get('role')
 			full_name = form.cleaned_data.get('full_name')

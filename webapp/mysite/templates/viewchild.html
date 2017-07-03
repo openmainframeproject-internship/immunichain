@@ -12,25 +12,37 @@
 		Birthdate: {{h.dob}}<br>
 		Guardian: {{userdict|get_item:h.guardian}}<br>
 		Medical Providers:
-			<ol style="list-style-type:square">
-			{% for name in h.medproviders %}
-				<li>{{userdict|get_item:name}}</li>
-			{% endfor %}	
-			</ol>
-		Members:
-			<ol style="list-style-type:square">
-			{% for name in h.members %}
-				<li>{{userdict|get_item:name}}</li>
-			{% endfor %}	
-			</ol>
-		Immunizations:
-			<ol style="list-style-type:square">
-			{% for immunization in h.immunizations %}
-			{% if immunization.name != 'default' %}
-			<li><strong>Vaccine</strong>: {{immunization.name}}, <strong>Date</strong>: {{immunization.imdate}}, <strong>Provider</strong>: {{userdict|get_item:immunization.provider}}</li>
+			{% if not h.medproviders %}
+				None<br>
+			{% else %}
+				<ol style="list-style-type:square">
+				{% for name in h.medproviders %}
+					<li>{{userdict|get_item:name}}</li>
+				{% endfor %}	
+				</ol>
 			{% endif %}
-			{% endfor %}	
-			</ol>
+		Members:
+			{% if not h.members %}
+				None<br>
+			{% else %}
+				<ol style="list-style-type:square">
+				{% for name in h.members %}
+					<li>{{userdict|get_item:name}}</li>
+				{% endfor %}	
+				</ol>
+			{% endif %}
+		Immunizations:
+			{% if h|get_item:immunization.name != 'default'%}
+				<ol style="list-style-type:square">
+				{% for immunization in h.immunizations %}
+				{% if immunization.name != 'default' %}
+				<li><strong>Vaccine</strong>: {{immunization.name}}, <strong>Date</strong>: {{immunization.imdate}}, <strong>Provider</strong>: {{userdict|get_item:immunization.provider}}</li>
+				{% endif %}
+				{% endfor %}	
+				</ol>
+			{% else %}
+				None<br>
+			{% endif %}
 	{% endif %}
   </p>
 	<p>Select child to view record:</p>

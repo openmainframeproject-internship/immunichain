@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.forms import BaseFormSet
+from django.forms import BaseFormSet, ModelForm
+from core.models import ChildProfile, get_choices
 
 class SignUpForm(UserCreationForm):
 	ROLE_CHOICES = (('','-----------'),('GRDN', 'Guardian'), ('MEMB', 'Member Organization'), ('HEAL', 'Healthcare Provider'))
@@ -17,27 +18,21 @@ class NameForm(forms.Form):
 		super(NameForm, self).__init__(*args, **kwargs)
 		self.fields["child_access"] = forms.ChoiceField(choices=choices, label="Select")
 
-class NewChildForm(forms.Form):
-	def __init__(self, medproviders, members, *args, **kwargs):
-		super(NewChildForm, self).__init__(*args, **kwargs)
-		self.fields["medproviders"] = forms.MultipleChoiceField(choices=medproviders, required=False, label="Healthcare Providers")
-		self.fields["members"] = forms.MultipleChoiceField(choices=members, required=False, label="Member Organizations")
+class NewChildForm(ModelForm):
+	birthdate = forms.DateField(help_text='Required. Format: YYYY-MM-DD',input_formats=['%Y-%m-%d'], required=True)
+	medproviders = forms.MultipleChoiceField(choices=get_choices("HEAL"), required=False, label="Healthcare Providers")
+	members = forms.MultipleChoiceField(choices=get_choices("MEMB"), required=False, label="Member Organizations")
 
-	full_name = forms.CharField(help_text="Please enter your child's full name.", required=True)
-	username = forms.CharField(
-		help_text="Required. 150 characters or fewer. Usernames may contain alphanumeric, _, @, +, . and - characters.", 
-		required=True)
-	birth_date = forms.DateField(help_text='Required. Format: YYYY-MM-DD',input_formats=['%Y-%m-%d'], required=True)
-	address = forms.CharField(help_text="Please enter your child's address", required=True)
+	class Meta:
+		model = ChildProfile
+		fields = ['full_name', 'username', 'birthdate', 'address', 'medproviders', 'members']
 
 class UpdateForm(forms.Form):
 	def __init__(self, children, *args, **kwargs):
 		super(UpdateForm, self).__init__(*args, **kwargs)
 		self.fields["child"] = forms.ChoiceField(choices=children, label="Child")
-
 	new_name = forms.CharField(help_text="Please enter your child's full name.", required=False)
 	new_address = forms.CharField(help_text="Please enter your child's new address.", required=False)
-
 	def clean(self):
 		cleaned_data = super(UpdateForm, self).clean()
 		if not (cleaned_data.get("new_name") or cleaned_data.get("new_address")):
