@@ -32,12 +32,10 @@
 				</ol>
 			{% endif %}
 		Immunizations:
-			{% if h|get_item:immunization.name != 'default'%}
+			{% if h.immunizations.0.name != 'default'%}
 				<ol style="list-style-type:square">
 				{% for immunization in h.immunizations %}
-				{% if immunization.name != 'default' %}
 				<li><strong>Vaccine</strong>: {{immunization.name}}, <strong>Date</strong>: {{immunization.imdate}}, <strong>Provider</strong>: {{userdict|get_item:immunization.provider}}</li>
-				{% endif %}
 				{% endfor %}	
 				</ol>
 			{% else %}

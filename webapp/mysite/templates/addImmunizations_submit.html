@@ -1,47 +1,71 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block content %}
 	<h2>Add Immunizations!</h2>
 	<p>
 		<a href="{% url 'home' %}">Back to home</a>
 	</p>
-	<p>
-		{% if existing_record.0.name != 'default'%}
-			<h4>{{child_name}} already has the following vaccinations:</h4>
-				<ul style="list-style-type:square">
-					{% for field in existing_record %}
-						<li><strong>Name</strong>: {{field.name}}, <strong>Provider</strong>: {{meddict|get_item:field.provider}}, <strong>Date</strong>: {{field.imdate}}</li>
-					{% endfor %}
-				</ul>
-		{% endif %}
-		<h4>Submit Immunizations:</h4>
-		<form method="post">
-		{% csrf_token %}
-			<input type="radio" name="child" value={{cid}} checked>{{child_name}}
+	{% if existing_record.0.name != 'default'%}
+		<h4>{{child_name}} already has the following vaccinations:</h4>
+			<ul style="list-style-type:square">
+				{% for field in existing_record %}
+					<li><strong>Name</strong>: {{field.name}}, <strong>Provider</strong>: {{meddict|get_item:field.provider}}, <strong>Date</strong>: {{field.imdate}}</li>
+				{% endfor %}
+			</ul>
+	{% endif %}
+	<h4>Submit Immunizations:</h4>
+	<form method="post">
+	{% csrf_token %}
+		<input type="radio" name="child" value={{cid}} checked>{{child_name}}<br>
+		{{ Immunirecord.management_form }}
+		{% for link_form in Immunirecord %}
 			<p>
-				<table>
-				    <thead>
-				        {% for form in Immunirecord.forms %}
-				            {% if forloop.first %}
-				                {% for field in form %}
-				                    <th>{{ field.label_tag }}</th>
-				                {% endfor %}
-				            {% endif %}
-				    </thead>
-				    <tbody>
-				            <tr>
-				                {% for field in form %}
-				                    <td>{{ field }}</td>
-				                {% endfor %}
-				            </tr>
-				        {% endfor %}
-				    </tbody>
-				</table>
-			{{ Immunirecord.management_form }}
+				<div class="immunirecord">
+		            {{ link_form.name }}
+		            {% if link_form.name.errors %}
+		                {% for error in link_form.name.errors %}
+		                    {{ error|escape }}
+		                {% endfor %}
+		            {% endif %}
+
+		            {{ link_form.date }}
+		            {% if link_form.date.errors %}
+		                {% for error in link_form.date.errors %}
+		                    {{ error|escape }}
+		                {% endfor %}
+		            {% endif %}
+		        </div>			
 			</p>
-			<input type="submit" value="Submit" />
-		</form>
-	</p>
+	    {% endfor %}
+
+        {% if Immunirecord.non_form_errors %}
+        	<p>
+	        {% for error in Immunirecord.non_form_errors %}
+	            {{ error|escape }}
+	        {% endfor %}
+	        </p>
+	        {% if Immunirecord.non_form_errors.0 == 'You need to submit at least one record.'%}
+	        	<a href="{%url 'addImmun'%}">Try Again</a>
+	        {% else %}
+	    	<input type="submit" value="Submit" class="button" />
+	    	{% endif %}
+
+	    {% else %}
+	    	<input type="submit" value="Submit" class="button" />
+	    {% endif %}
+	</form>
+
+<!-- Include formset plugin - including jQuery dependency -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="{{ STATIC_URL }} /static/jquery-3.2.1.js"></script>
+<script src="{{ STATIC_URL }} /static/jquery.formset.js"></script>
+<script>
+    $('.immunirecord').formset({
+        addText: 'Add more',
+        deleteText: 'Remove'
+    });
+</script>	
 
 {% endblock %}
 

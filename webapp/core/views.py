@@ -255,33 +255,35 @@ def addImmunizations(request):
 @login_required
 def addImmunizations_submit(request):
 	assert request.user.profile.role == "HEAL"
-	Immunirecord = formset_factory(Immunization, formset=RequiredFormSet, extra=5)
 	if request.method == "GET":
 		cid = request.GET.get('child_access')
-		form = NameForm(request.GET)
-		h = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform")
-		h = h.json()
-		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
-		chosen = (item for item in r if item["cid"] == cid).next()
-		child_name = chosen["name"]
-		existing_record = chosen["immunizations"]
-		meddict = {}
-		for record in existing_record:
-			if record['provider'] not in meddict.keys() and record['provider']!="default":
-				r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'])
-				r = r.json()
-				meddict[record['provider']] = r["name"]
-		renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,'Immunirecord': Immunirecord}
-		return render(request, 'addImmunizations_submit.html', renderdict)
-	elif request.method == "POST":
-		formset = Immunirecord(request.POST)
+	else:
 		cid = request.POST["child"]
+	Immunirecord = formset_factory(Immunization, formset=RequiredFormSet)
+	h = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform")
+	h = h.json()
+	r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
+	chosen = (item for item in r if item["cid"] == cid).next()
+	child_name = chosen["name"]
+	existing_record = chosen["immunizations"]
+	meddict = {}
+	for record in existing_record:
+		if record['provider'] not in meddict.keys() and record['provider']!="default":
+			r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'])
+			r = r.json()
+			meddict[record['provider']] = r["name"]
+	renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,'Immunirecord': Immunirecord}
+
+	if request.method == "POST":
+		formset = Immunirecord(request.POST)	#cleaning process starts here
 		if formset.is_valid():
 			immunizations = []
 			providerid = request.user.username
 			for form in formset:
-				if form.cleaned_data.get('name') is not None and form.cleaned_data.get('date') is not None:
-					d = {'name': form.cleaned_data.get('name'), 'provider': providerid, 'imdate':str(form.cleaned_data.get('date'))}
+				name = form.cleaned_data.get('name')
+				date = form.cleaned_data.get('date')
+				if name and date:
+					d = {'name': name, 'provider': providerid, 'imdate':str(date)}
 					immunizations.append(d)
 			immunizations = json.dumps(immunizations)
 			d = {"childform": cid, "vaccines": immunizations}
@@ -289,9 +291,8 @@ def addImmunizations_submit(request):
 			assert r.status_code == SUCCESS_CALL
 			return redirect('success')
 		else:
-			return redirect('failure')
-	else:
-		return redirect('failure')
+			renderdict['Immunirecord'] = formset
+	return render(request, 'addImmunizations_submit.html', renderdict)
 
 @login_required
 def newchild(request):

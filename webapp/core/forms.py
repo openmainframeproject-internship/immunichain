@@ -40,21 +40,47 @@ class UpdateForm(forms.Form):
 		return cleaned_data
 
 class Immunization(forms.Form):
-	name = forms.CharField(help_text="Please enter the vaccine name.", required=True)
-	date = forms.DateField(help_text='Format: YYYY-MM-DD',input_formats=['%Y-%m-%d'],required=True)
+	name = forms.CharField(max_length=100,widget=forms.TextInput(attrs={'placeholder': 'Enter vaccine',}),
+							required=False)
+	date = forms.DateField(widget=forms.DateInput(attrs={'placeholder': 'Format: YYYY-MM-DD',}),
+							input_formats=['%Y-%m-%d'], required=False)
 
 class RequiredFormSet(BaseFormSet):
-	def __init__(self, *args, **kwargs):
-		super(RequiredFormSet, self).__init__(*args, **kwargs)
-		self.forms[0].empty_permitted = False
-
 	def clean(self):
 		if any(self.errors):
 			return
+
 		names = []
+		dates = []
+		duplicates = False
+
+		if not self.forms:
+			raise forms.ValidationError('You need to submit at least one record.',
+										code = 'missing')
+
 		for form in self.forms:
 			if form.cleaned_data:
 				name = form.cleaned_data['name']
-				if name in names:
-					raise forms.ValidationError("Vaccines must have distinct names.")
-				names.append(name)
+				date = form.cleaned_data['date']
+
+				#check that no two links have the same name, same date is fine
+				if name and date:
+					if name in names:
+						duplicates = True
+					names.append(name)
+
+				if duplicates:
+					raise forms.ValidationError('Vaccines must have unique names.',
+						code='duplicate_names')
+
+				#check that all immunization records have both a name and date
+				if name and not date:
+					raise forms.ValidationError('All vaccines must have a date.',
+						code='missing_date')
+				elif date and not name:
+					raise forms.ValidationError('You are missing the vaccine name.',
+						code='missing_name')
+			else:
+				print "I'M BLUE"
+				raise forms.ValidationError('Please fill in all the fields or remove rows you do not need.',
+							code = 'missing_everything')
