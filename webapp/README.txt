@@ -21,3 +21,7 @@ Notes: 	Because this has not been deployed to a server yet, the blockchain will 
 		if you want to play around with multiple participant types, you will need 
 		to keep track of the participants you have created. When the app is deployed
 		to a server, the login database and blockchain will be in sync.
+		
+		Also for now, do not use the following usernames as they are in the blockchain already
+		but not in your databases, and will throw assertionErrors:
+			aweaver, arty, ftyler, klamar, coolhealth, lhealth, medpros, troop138
