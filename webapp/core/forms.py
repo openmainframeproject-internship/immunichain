@@ -19,10 +19,15 @@ class NameForm(forms.Form):
 		self.fields["child_access"] = forms.ChoiceField(choices=choices, label="Select")
 
 class NewChildForm(ModelForm):
-	birthdate = forms.DateField(help_text='Required. Format: YYYY-MM-DD',input_formats=['%Y-%m-%d'], required=True)
-	medproviders = forms.MultipleChoiceField(choices=get_choices("HEAL"), required=False, label="Healthcare Providers")
-	members = forms.MultipleChoiceField(choices=get_choices("MEMB"), required=False, label="Member Organizations")
+	medproviders = forms.MultipleChoiceField(required=False, label="Healthcare Providers")
+	members = forms.MultipleChoiceField(required=False, label="Member Organizations")
 
+	def __init__(self, *args, **kwargs):
+		super(NewChildForm, self).__init__(*args, **kwargs)
+		self.fields['medproviders'].choices = get_choices("HEAL")
+		self.fields['members'].choices = get_choices("MEMB")
+
+	birthdate = forms.DateField(help_text='Required. Format: YYYY-MM-DD',input_formats=['%Y-%m-%d'], required=True)
 	class Meta:
 		model = ChildProfile
 		fields = ['full_name', 'username', 'birthdate', 'address', 'medproviders', 'members']
@@ -49,15 +54,12 @@ class RequiredFormSet(BaseFormSet):
 	def clean(self):
 		if any(self.errors):
 			return
-
 		names = []
 		dates = []
 		duplicates = False
-
 		if not self.forms:
 			raise forms.ValidationError('You need to submit at least one record.',
 										code = 'missing')
-
 		for form in self.forms:
 			if form.cleaned_data:
 				name = form.cleaned_data['name']
@@ -68,11 +70,9 @@ class RequiredFormSet(BaseFormSet):
 					if name in names:
 						duplicates = True
 					names.append(name)
-
 				if duplicates:
 					raise forms.ValidationError('Vaccines must have unique names.',
 						code='duplicate_names')
-
 				#check that all immunization records have both a name and date
 				if name and not date:
 					raise forms.ValidationError('All vaccines must have a date.',
@@ -81,6 +81,5 @@ class RequiredFormSet(BaseFormSet):
 					raise forms.ValidationError('You are missing the vaccine name.',
 						code='missing_name')
 			else:
-				print "I'M BLUE"
 				raise forms.ValidationError('Please fill in all the fields or remove rows you do not need.',
 							code = 'missing_everything')

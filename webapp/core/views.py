@@ -37,13 +37,13 @@ def viewchild(request):
 	for child in r.json():
 		if user_role == 'GRDN':
 			if ("resource:ibm.wsc.immunichain.Guardian#"+username) == child['guardian']:
-				CHILD_CHOICES.append((child['cid'],child['name']))
+				CHILD_CHOICES.append((child['cid'],child['name']+", "+child['cid']))
 		elif user_role == 'MEMB':
 			if (memberorg_prefix+username) in child['members']:
-				CHILD_CHOICES.append((child['cid'],child['name']))
+				CHILD_CHOICES.append((child['cid'],child['name']+", "+child['cid']))
 		else:
 			if (mprovider_prefix+username) in child['medproviders']:
-				CHILD_CHOICES.append((child['cid'],child['name']))
+				CHILD_CHOICES.append((child['cid'],child['name']+", "+child['cid']))
 
 	if request.method == 'POST':
 		form = NameForm(CHILD_CHOICES, request.POST)
@@ -132,7 +132,7 @@ def assignmed_select(request):
 	h = h.json()
 	r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 	for child in r:
-		children.append((child['cid'], child['name']))
+		children.append((child['cid'], child['name']+", "+child['cid']))
 	if request.method == 'POST':
 		form = NameForm(children, request.POST)
 		if form.is_valid():
@@ -172,7 +172,7 @@ def deauth_member_select(request):
 	h = h.json()
 	r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 	for child in r:
-		children.append((child['cid'], child['name']))
+		children.append((child['cid'], child['name']+", "+child['cid']))
 	if request.method == 'POST':
 		form = NameForm(children, request.POST)
 		if form.is_valid():
@@ -200,13 +200,11 @@ def deauth_member_submit(request):
 	r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform/"+cid)
 	r = r.json()
 	existing_members = r["members"]
-
 	if (memberorg_prefix+memid) in existing_members:
 		gid = request.user.username
 		d = {"guardian": gid,"member": memid, "childform": cid}
 		make = requests.post("http://148.100.4.163:3000/api/ibm.wsc.immunichain.removeMemberAuth", data=d)
 		assert make.status_code == SUCCESS_CALL
-
 	return render(request, 'deauth_member_submit.html')
 
 @login_required
@@ -237,7 +235,6 @@ def update(request):
 				return redirect('failure')
 	else:
 		form = UpdateForm(children)
-
 	return render(request, 'update.html', {'form':form})
 
 @login_required
@@ -248,7 +245,7 @@ def addImmunizations(request):
 	h = h.json()
 	r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
 	for child in r:
-		children.append((child['cid'], child['name']))
+		children.append((child['cid'], child['name']+', '+child['cid']))
 	form = NameForm(children)
 	return render(request, 'addImmunizations.html', {'form':form})
 
@@ -273,7 +270,6 @@ def addImmunizations_submit(request):
 			r = r.json()
 			meddict[record['provider']] = r["name"]
 	renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,'Immunirecord': Immunirecord}
-
 	if request.method == "POST":
 		formset = Immunirecord(request.POST)	#cleaning process starts here
 		if formset.is_valid():
@@ -314,7 +310,6 @@ def newchild(request):
 			d = {'cid':cid, 'name':name, 'address':address, "guardian":guardian, 'dob':dob, 
 			'medproviders': medproviders, 'members':members, "immunizations": default }
 			r = requests.post("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", data=d)
-			print r
 			if r.status_code == SUCCESS_CALL:
 				return redirect('success')
 			else:
@@ -327,12 +322,10 @@ def newchild(request):
 def signup(request):
 	if request.method == 'POST':
 		form = SignUpForm(request.POST)
-		print "HELLO"
 		if form.is_valid():
 			role = form.cleaned_data.get('role')
 			full_name = form.cleaned_data.get('full_name')
 			username = form.cleaned_data.get('username')
-
 			assert role in ["GRDN","MEMB","HEAL"]
 			if role == 'GRDN':
 				d = {'gid': username, 'name': full_name}
@@ -346,7 +339,6 @@ def signup(request):
 				d = {'medid': username, 'name': full_name}
 				r = requests.post("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider", data=d)
 				assert r.status_code == SUCCESS_CALL
-
 			user = form.save()
 			user.refresh_from_db()
 			user.profile.role = role
@@ -359,7 +351,6 @@ def signup(request):
 	else:
 		form = SignUpForm()
 	return render(request, 'signup.html', {'form':form})
-
 
 @login_required
 def success(request):

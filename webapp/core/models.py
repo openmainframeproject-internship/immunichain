@@ -26,6 +26,7 @@ class ChildProfile(models.Model):
 	address = models.CharField(help_text="Please enter your child's address", max_length=24)
 
 def get_choices(participant):
+	print "I'm getting choices!"
 	results = []
 	if participant == "MEMB":
 		r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Member")
