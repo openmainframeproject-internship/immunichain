@@ -29,12 +29,12 @@ def get_choices(participant):
 	print "I'm getting choices!"
 	results = []
 	if participant == "MEMB":
-		r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.Member")
+		r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Member", verify=False)
 		for member in r.json():
 			results.append((member['memid'], member['name']))
 		return results
 	elif participant == "HEAL":
-		r = requests.get("http://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider")
+		r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider", verify=False)
 		for provider in r.json():
 			results.append((provider['medid'], provider['name']))
 		return results

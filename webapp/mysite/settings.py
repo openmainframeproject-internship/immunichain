@@ -27,7 +27,7 @@ SECRET_KEY = 'boe*=l9)em9h$*mjs&5cyo&!)o=uj@zp5da9kstvqk%*7u=w!m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['148.100.4.128',]
 
 
 # Application definition
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': '/data/webserver/immunichain/webapp/db.sqlite3',
     }
 }
 
