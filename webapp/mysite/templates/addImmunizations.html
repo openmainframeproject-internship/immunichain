@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Choose child</h2>
+	<h2>Add Immunizations</h2>
+	<h3>Select child</h3>
 	<p>
-		<a href="{% url 'home' %}">Back to home</a>
-	</p>
-	<p>
+	{% if form.child_access.field.choices %}
 		<form action = "{% url 'addImmun_submit' %}" method="get">
 		{% csrf_token %}
-			{{form}}
-			<input type="submit" value="Submit" />
+		{{form}}
+		<input type="submit" value="Submit" />
 		</form>
+	{%	else %}
+		<p>You currently don't have any children!</p>
+	{%	endif %}
 	</p>
 
 {% endblock %}

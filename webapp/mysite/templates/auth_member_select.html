@@ -3,19 +3,22 @@
 {% block content %}
 	<h2>Authorize a Member Organization</h2>
 	<p>
-		<a href="{% url 'home' %}">Back to home</a>
-	</p>
-	<p>
 		{% if form %}
-			<form method="post">
-			{% csrf_token %}
-			{{form}}
-			<input type="submit" value="Submit" />
-			</form>
+			<h3>Select child</h3>
+			{% if form.child_access.field.choices %}
+				<form method="post">
+				{% csrf_token %}
+				{{form}}
+				<input type="submit" value="Submit" />
+				</form>
+			{%	else %}
+				<p>You currently don't have any children!</p>
+			{%	endif %}
 		{% else %}
 			<form action = "{% url 'auth_member_submit' %}" method="post">
+				<h3>Authorize members to {{child_name}}'s record</h3>
 				{% csrf_token %}
-				<input type="radio" name="child" value={{cid}} checked>{{child_name}}<br>
+				<input type="hidden" name="child" value={{cid}}>
 				<select required name="newmember">
 					<option value="">-----------</option>
 				{% for name, username in avail_members %}

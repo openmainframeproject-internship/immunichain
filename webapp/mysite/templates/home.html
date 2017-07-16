@@ -11,9 +11,7 @@
         <li><strong>Name</strong>: {{field.name}}, <strong>ID</strong>: {{field.cid}}</li>
       {% endfor %}
     </ol>
-
   </p>
-
   <p>What would you like to do today?
   	<ol style="list-style-type:square">
   	{% if user.profile.role == 'GRDN' %}
@@ -23,6 +21,7 @@
   		<li><a href="{% url 'assignmed_select' %}">Add medical providers</a></li>
       <li><a href="{% url 'update' %}">Update my child's information</a></li>
       <li><a href="{% url 'newchild' %}">Add a child</a></li>
+      <li><a href="{% url 'reassign_select' %}">Authorize child access</a></li>
   	{% elif user.profile.role == 'MEMB' %}
   		<li><a href="{% url 'viewchild' %}">View child's immunization record</a></li>
   	{% else %}

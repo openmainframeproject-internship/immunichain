@@ -34,11 +34,18 @@ urlpatterns = [
     url(r'^assign_select/$', core_views.assignmed_select, name='assignmed_select'),
     url(r'^assign_select/submit$', core_views.assignmed_submit, name='assignmed_submit'),
 
+    url(r'^reassign_select/$', core_views.reassign_select, name='reassign_select'),
+    url(r'^reassign_select/submit$', core_views.reassign_submit, name='reassign_submit'),
+
     url(r'^add$', core_views.addImmunizations, name='addImmun'),
     url(r'^add/submit$', core_views.addImmunizations_submit, name='addImmun_submit'),
 
     url(r'^success/$', core_views.success, name='success'),
     url(r'^failure/$', core_views.failure, name='failure'),
+    url(r'^deny/$', core_views.deny, name='deny'),
+    url(r'^deny/underage$', core_views.underage, name='underage'),
+
+
     url(r'^newchild/$', core_views.newchild, name='newchild'),
     url(r'^update/$', core_views.update, name='update'),
     url(r'^login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),

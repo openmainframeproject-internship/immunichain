@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Authorize Child Access</h2>
+	<h3 style="color: red">Keep in mind that giving your child access to his/her record will also release the record from your account.</h3>
+	<p>
+		{% if form %}
+			<h3>Select child</h3>
+			{% if form.child_access.field.choices %}
+				<form method="post">
+				{% csrf_token %}
+				{{form}}
+				<input type="submit" value="Submit" />
+				</form>
+			{%	else %}
+				<p>You currently don't have any children!</p>
+			{%	endif %}
+		{% else %}
+			<h3>Authorize access for {{child_name}}</h3>
+			<form action = "{% url 'reassign_submit' %}" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="child[]" value="{{cid}}">
+				<input type="hidden" name="child[]" value="{{child_name}}">
+    			{% for field in newform %}
+      				<p>
+        			{{ field.label_tag }}<br>
+        			{{ field }}
+        			{% if field.help_text %}
+          				<small style="color: grey">{{ field.help_text }}</small>
+        			{% endif %}
+       				{% for error in field.errors %}
+          				<p style="color: red">{{ error }}</p>
+        			{% endfor %}
+      				</p>
+    			{% endfor %}
+    			<button type="submit">Sign up</button>
+			</form>
+		{% endif %}
+	</p>
+
+{% endblock %}

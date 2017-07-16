@@ -2,10 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
-	<h2>Add Immunizations!</h2>
-	<p>
-		<a href="{% url 'home' %}">Back to home</a>
-	</p>
+	<h2>Add Immunizations</h2>
 	{% if existing_record.0.name != 'default'%}
 		<h4>{{child_name}} already has the following vaccinations:</h4>
 			<ul style="list-style-type:square">
@@ -14,10 +11,10 @@
 				{% endfor %}
 			</ul>
 	{% endif %}
-	<h4>Submit Immunizations:</h4>
 	<form method="post">
+	<h3>Add Immunizations for {{child_name}}</h3>
 	{% csrf_token %}
-		<input type="radio" name="child" value={{cid}} checked>{{child_name}}<br>
+		<input type="hidden" name="child" value={{cid}}>
 		{{ Immunirecord.management_form }}
 		{% for link_form in Immunirecord %}
 			<p>

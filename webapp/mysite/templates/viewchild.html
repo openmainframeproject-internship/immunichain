@@ -3,9 +3,6 @@
 {% block content %}
 	<h2>View Child's Record</h2>
 	<p>
-		<a href="{% url 'home' %}">Back to home</a>
-	</p>
-	<p>
 	{% if h %}
 		Name: {{h.name}}<br>
 		ID: {{h.cid}}<br>
@@ -43,11 +40,17 @@
 				None<br>
 			{% endif %}
 	{% endif %}
-  </p>
-	<p>Select child to view record:</p>
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" />
-</form>
+  	</p>
+	<p>
+	{% if form.child_access.field.choices %}
+		<p>Select child to view record:</p>
+		<form action="" method="post">
+		{% csrf_token %}
+		{{form}}
+		<input type="submit" value="Submit" />
+		</form>
+	{%	else %}
+		<p>You currently don't have any children!</p>
+	{%	endif %}
+	</p>
 {% endblock %}

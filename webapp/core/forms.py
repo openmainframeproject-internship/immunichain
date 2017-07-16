@@ -13,6 +13,11 @@ class SignUpForm(UserCreationForm):
 		model= User 
 		fields=('full_name','username','password1','password2','role')
 
+class SignUpForm_reassign(UserCreationForm):
+	class Meta:
+		model= User 
+		fields=('username','password1','password2')
+
 class NameForm(forms.Form):
 	def __init__(self, choices, *args, **kwargs):
 		super(NameForm, self).__init__(*args, **kwargs)
