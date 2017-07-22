@@ -1,7 +1,95 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Sign up</h2>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 70%;
+    padding: 15px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.9);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+}
+
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+
+#id_full_name, #id_username, #id_password1, #id_password2, #id_role {
+    position: relative;
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.error{
+  color:red;
+}
+.container{
+  margin-top: 20px;
+}
+</style>  
+</head>
+<body>
+<div class="container">
+  <form class="form-horizontal" role="form" method="post">
+    {% csrf_token %}
+    <h1 class='text-center login-title'>Join IMMUNIchain today.</h1>
+    <br>
+    {% for field in form %}
+      <div class="form-group">
+        {% if field.auto_id != 'id_password2'%}
+          <label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+        {% else %}
+          <label class="col-sm-3 control-label">Confirm Password:</label>
+        {% endif %}
+        <div class="col-sm-9">
+          {{ field }}
+        </div>
+      </div>
+      {% for error in field.errors %}
+        <div class="form-group">
+          <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-9 error">
+              {{ error }}
+            </div>
+        </div>
+      {% endfor %}
+    {% endfor %}
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+    <div class="text-center" style="margin-top: 1em">
+      <a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">I already have an account.</a>
+    </div>
+  </form>
+</div> 
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_full_name").attr('placeholder', '{{form.full_name.help_text}}');
+        $("#id_username").attr('placeholder', '{{form.username.help_text}}');
+        $("#id_password2").attr('placeholder', '{{form.password2.help_text}}');
+        $("#id_password1").attr('placeholder', 'Your password must contain at least 8 characters.');
+
+        $("#id_username").attr('class', 'form-control');
+        $("#id_password1").attr('class', 'form-control');
+        $("#id_password2").attr('class', 'form-control');
+    });
+</script>
+{% endblock %}
+
+<!--   <h2>Sign up</h2>
   <form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -17,5 +105,4 @@
       </p>
     {% endfor %}
     <button type="submit">Sign up</button>
-  </form>
-{% endblock %}
+  </form> -->

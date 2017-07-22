@@ -1,7 +1,122 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Deauthorize Member Organization</h2>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 50%;
+    padding: 2em;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.9);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 1.5em;
+}
+a{
+    width: 100%;
+}
+option, .form-group{
+	height: auto;
+    font-family: 'Open Sans', sans-serif;
+/*    margin: 0 auto;*/
+}
+</style>
+</head>
+<body>
+{% if form %}
+	<!-- Select child to add members to -->
+	{% if form.child_access.field.choices|length > 1 %}
+	    <div class="container">
+	      <form class="form-horizontal" role="form" method="post">
+	        {% csrf_token %}
+	        <h1 class='text-center login-title'>Select child to remove member organization access from:</h1>
+	        <br>
+	        {% for field in form %}
+	          <div class="form-group">
+	              {{ field }}
+	          </div>
+	        {% endfor %}
+	        <button class="btn btn-lg btn-primary btn-block" type="submit">Continue</button>
+			<div class="text-center" style="margin-top: 1em">
+        		<a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+	      	</div>
+	      </form>
+	    </div>
+	{% else %}
+	    <div class="container">
+	      <form class="form-horizontal" role="form">
+	        <h1 class='text-center login-title'>You do not have any children!</h1>
+	        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+	      </form>
+	    </div>
+	{% endif %}
+{% else %}
+	{% if avail_members %}
+		<!-- Add Member Organizations -->
+		<div class="container">
+			<form class="form-horizontal" role="form" action = "{% url 'deauth_member_submit' %}" method="post">
+				{% csrf_token %}
+				<h1 class='text-center login-title'>Remove member access to {{child_name}}'s record:</h1>
+				<input type="hidden" name="child" value={{cid}}>
+				<div class = "form-group" >
+					<select class="form-control" required name="newmember" style="width:80%; margin: auto">
+						<option value="">-----------</option>
+						{% for name, username in avail_members %}
+							<option value={{username}}>{{name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+		        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+    			<div class="text-center" style="margin-top: 1em">
+        			<a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+	      		</div>
+			</form>
+		</div>
+	{%	else	%}
+		<!-- If the child is not in any organization, throw this message -->
+	    <div class="container">
+	      <form class="form-horizontal" role="form">
+	        <h1 class='text-center login-title'>{{child_name}} is not in any member organization!</h1>
+	        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+	      </form>
+	    </div>	
+	{% endif %}
+
+{% endif %}	
+</body>
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_child_access").attr('class', 'form-control');
+    });
+</script>
+
+{% endblock %}
+
+<!-- PreBootstrap Code -->
+<!-- 	<h2>Deauthorize Member Organization</h2>
 	<p>
 		{% if form %}
 			<h3>Select child</h3>
@@ -32,6 +147,4 @@
 				{{child_name}} is not in any member organization!
 			{% endif %}
 		{% endif %}
-	</p>
-
-{% endblock %}
+	</p> -->

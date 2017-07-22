@@ -1,7 +1,277 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>View Child's Record</h2>
+<head>
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+ --><style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 50%;
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 1.5em;
+}
+.card {
+    font-size: 1em;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: 1.28571429rem;
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+}
+
+.card-block {
+    font-size: 1em;
+    position: relative;
+    margin: 0;
+    padding: 1em;
+    border: none;
+    border-top: 1px solid rgba(34, 36, 38, .1);
+    box-shadow: none;
+    background: rgba(255,255,255,0.9);
+   /* border-radius: 10em;*/
+}
+
+.card-img-top {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.card-title {
+	font-weight: 400;
+	font-size: 2em;
+    line-height: 0.5em;
+}
+
+.card-text , td{
+    clear: both;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+    margin-bottom: .5em;
+    color: rgba(0, 0, 0, .68);
+}
+
+.card-footer {
+	font-family: 'Patua One', cursive;
+    font-size: 1em;
+    font-weight: 400;
+    position: static;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    padding: .75em 1em;
+    color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, .05) !important;
+    background: rgba(51,122,183,0.9);
+/*    background: #fff;*/
+}
+.card-inverse .btn {
+    border: 1px solid rgba(0, 0, 0, .05);
+}
+.text-bold {
+    font-weight: 700;
+}
+
+.meta, th{
+    font-size: 1.5em;
+    color: rgba(0, 0, 0, .4);
+}
+
+.meta a, th{
+    text-decoration: none;
+    color: rgba(0, 0, 0, .4);
+}
+
+.meta a:hover, th:hover{
+    color: rgba(0, 0, 0, .87);
+}
+.card-block{
+	font-family: 'Patua One', cursive;
+}
+.col-sm-12{
+	margin-top: 20px;
+}
+a{
+    width: 100%;
+}
+</style>
+</head>
+
+<body>
+{% if h %}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-4">
+        	<div class="card">
+                <div class="card-block">
+                    <div class="meta"><a>Name</a></div>
+                    <div class="card-text">{{h.name}}</div>
+
+                    <div class="meta"><a>Username</a></div>
+                    <div class="card-text">{{h.cid}}</div>
+
+                    <div class="meta"><a>Birthdate</a></div>
+                	<div class="card-text">{{h.dob}}</div>
+
+                    <div class="meta"><a>Address</a></div>
+                	<div class="card-text">{{h.address}}</div>
+
+                    <div class="meta"><a>Guardian</a></div>
+                	<div class="card-text">{{userdict|get_item:h.guardian}}</div>
+                </div>
+                <div class="card-footer">
+                	<h3 class="card-title mt-3">Personal</h3>
+                </div>
+            </div>
+        </div>
+
+		<div class="col-sm-4">
+        	<div class="card">
+                <div class="card-block">
+				{% if not h.medproviders %}
+					<div class="meta"><a>No providers were found.</a></div>
+					{% if user.profile.role == 'GRDN' %}
+						<div class="card-text"><a href="{% url 'assignmed_select' %}">Add a provider</a></div>
+					{% endif %}
+				{% else %}
+					{% for name in h.medproviders %}
+						<div class="meta"><a>Provider</a></div>
+                    	<div class="card-text">{{userdict|get_item:name}}</div>
+					{% endfor %}	
+				{% endif %}
+                </div>
+                <div class="card-footer">
+                	<h3 class="card-title mt-3">Medical Providers</h3>
+                </div>
+            </div>
+        </div>
+
+		<div class="col-sm-4">
+        	<div class="card">
+                <div class="card-block">
+				{% if not h.members %}
+					<div class="meta"><a>No members were found.</a></div>
+					{% if user.profile.role == 'GRDN' %}
+						<div class="card-text"><a href="{% url 'auth_member_select' %}">Add a member</a></div>
+					{% endif %}
+				{% else %}
+					{% for name in h.members %}
+						<div class="meta"><a>Member</a></div>
+                    	<div class="card-text">{{userdict|get_item:name}}</div>
+					{% endfor %}	
+				{% endif %}
+                </div>
+                <div class="card-footer">
+                	<h3 class="card-title mt-3">Member Organizations</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+		<div class="col-sm-12">
+        	<div class="card">
+                <div class="card-block">
+				{% if h.immunizations.0.name != 'default'%}
+					<table class = "table table-hover">
+						<thead>
+							<tr>
+								<th>Vaccine</th>
+								<th>Date</th>
+								<th>Provider</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for immunization in h.immunizations %}
+							<tr>
+								<td>{{immunization.name}}</td>
+								<td>{{immunization.imdate}}</td>
+								<td>{{userdict|get_item:immunization.provider}}</td>
+							</tr>
+							{%	endfor %}
+						</tbody>
+					</table>
+				{% else %}
+					<div class="meta"><a>No immunizations were found.</a></div>
+				{% endif %}
+				{% if user.profile.role == 'HEAL' %}
+					<div class="card-text text-center"><a href="{% url 'addImmun' %}">Add an immunization</a></div> 
+				{% endif %}
+                </div>
+                <div class="card-footer">
+                	<h3 class="card-title mt-3">Immunization Record</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- This will be on the bottom of all the viewchilds -->
+{% if form.child_access.field.choices|length > 1 %}
+    <div class="container">
+      <form class="form-horizontal" role="form" method="post">
+        {% csrf_token %}
+        <h1 class='text-center login-title'>View record for:</h1>
+        <br>
+        {% for field in form %}
+          <div class="form-group">
+              {{ field }}
+          </div>
+        {% endfor %}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Continue</button>
+        <div class="text-center" style="margin-top: 1em">
+            <a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+        </div>
+      </form>
+    </div>
+{% else %}
+    <div class="container">
+      <form class="form-horizontal" role="form">
+        <h1 class='text-center login-title'>You do not have any children!</h1>
+        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+      </form>
+    </div>
+{% endif %}
+
+</body>
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_child_access").attr('class', 'form-control');
+    });
+</script>
+
+{% endblock %}
+
+<!-- PreBootstrap Form -->
+
+<!-- <h2>View Child's Record</h2>
 	<p>
 	{% if h %}
 		Name: {{h.name}}<br>
@@ -53,4 +323,5 @@
 		<p>You currently don't have any children!</p>
 	{%	endif %}
 	</p>
-{% endblock %}
+
+ -->

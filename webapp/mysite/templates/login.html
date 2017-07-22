@@ -1,30 +1,146 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Log in to IMMUNIchain</h2>
-  {% if form.errors %}
-    <p style="color: red">Your username and password didn't match. Please try again.</p>
-  {% endif %}
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
 
-  <form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}" />
-    {% for field in form %}
-      <p>
-        {{ field.label_tag }}<br>
-        {{ field }}<br>
-        {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
-        {% endfor %}
-        {% if field.help_text %}
-          <p><small style="color: grey">{{ field.help_text }}</small></p>
-        {% endif %}
-      </p>
-    {% endfor %}
-    <button type="submit">Log in</button>
-    <p>
-      <a href="{% url 'signup' %}">New to IMMUNIchain? Sign up for free today!</a>
-    </p>
-    
-  </form>
+.form-signin
+{
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading, .form-signin .checkbox
+{
+    margin-bottom: 10px;
+}
+.form-signin .checkbox
+{
+    font-weight: normal;
+}
+.form-signin .form-control, .form-signin #id_password, .form-signin #id_username
+{
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: 'Open Sans', sans-serif;
+}
+.form-signin .form-control:focus, .form-signin #id_password:focus, .form-signin #id_username:focus
+{
+    z-index: 2;
+}
+.form-signin #id_username
+{
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+}
+.form-signin #id_password
+{
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    width: 100%;
+}
+.account-wall
+{
+    padding: 40px 0px 20px 0px;
+    background-color: #f7f7f7;
+    font-family: 'Patua One', cursive;
+/*    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);*/
+}
+.account-wall p
+{
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+.login-title
+{
+    color: #555;
+    /*font-size: 18px;*/
+    font-weight: 400;
+    display: block;
+}
+.profile-img
+{
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.need-help
+{
+    margin-top: 10px;
+}
+.new-account
+{
+    display: block;
+    margin-bottom: 10px;
+    font-family: 'Open Sans', sans-serif;
+
+}
+.col-sm-6, .col-md-4, .col-md-offset-4{
+  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  background-color: #f7f7f7;
+  font-family: 'Patua One', cursive;
+  border-radius: 10px;
+  margin-top: 20px;
+
+}
+</style>
+</head>
+
+<body>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6 col-md-4 col-md-offset-4">
+      <h1 class="text-center login-title">Sign in to continue to IMMUNIchain.</h1>
+        <div class="account-wall">
+          {% if form.errors %}
+            <p style="color: red">Your username and password didn't match. Please try again.</p>
+          {% endif %}
+          <form class="form-signin" method="post">
+          {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}" />
+            {% for field in form %}
+              {{ field }}<br>
+              {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+              {% endfor %}
+              {% if field.help_text %}
+                <p><small style="color: grey">{{ field.help_text }}</small></p>
+              {% endif %}
+            {% endfor %}
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+          </form>
+        </div>
+      <a href="{% url 'signup' %}" class="text-center new-account">Create an account </a>
+    </div>
+  </div>
+</div>
+</body>
+
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_username").attr('placeholder', '{{form.username.label}}');
+        $("#id_password").attr('placeholder', '{{form.password.label}}');
+    });
+</script>
+  
 {% endblock %}

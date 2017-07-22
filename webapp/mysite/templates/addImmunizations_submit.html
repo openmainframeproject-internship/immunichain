@@ -1,68 +1,199 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
 
 {% block content %}
-	<h2>Add Immunizations</h2>
-	{% if existing_record.0.name != 'default'%}
-		<h4>{{child_name}} already has the following vaccinations:</h4>
-			<ul style="list-style-type:square">
-				{% for field in existing_record %}
-					<li><strong>Name</strong>: {{field.name}}, <strong>Provider</strong>: {{meddict|get_item:field.provider}}, <strong>Date</strong>: {{field.imdate}}</li>
-				{% endfor %}
-			</ul>
-	{% endif %}
-	<form method="post">
-	<h3>Add Immunizations for {{child_name}}</h3>
-	{% csrf_token %}
-		<input type="hidden" name="child" value={{cid}}>
-		{{ Immunirecord.management_form }}
-		{% for link_form in Immunirecord %}
-			<p>
-				<div class="immunirecord">
-		            {{ link_form.name }}
-		            {% if link_form.name.errors %}
-		                {% for error in link_form.name.errors %}
-		                    {{ error|escape }}
-		                {% endfor %}
-		            {% endif %}
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 80%;
+    padding: 2em;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.8);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9, tbody, input{
+  font-family: 'Open Sans', sans-serif;
+}
+.card {
+    font-size: 1em;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: 1.28571429rem;
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+}
+.card-block {
+    font-size: 1em;
+    position: relative;
+    margin: 0;
+    padding: 1em;
+    border: none;
+    border-top: 1px solid rgba(34, 36, 38, .1);
+    box-shadow: none;
+    background: rgba(255,255,255,0.9);
+}
+.card-img-top {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.card-title {
+	font-family: 'Patua One', cursive;
+    font-size: 1em;
+    font-weight: 400;
+    position: static;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    padding: .75em 1em;
+    color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, .05) !important;
+    background: rgba(51,122,183,0.9);
+}
+.card-text , td{
+    clear: both;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+    margin-bottom: .5em;
+    color: rgba(0, 0, 0, .68);
+}
+.card-inverse .btn {
+    border: 1px solid rgba(0, 0, 0, .05);
+}
+thead{
+	font-family: 'Patua One', cursive;
+}
+.container{
+	margin-top: 1.5em;
+}
+</style>	
+</head>
+<body>
+<!-- List out existing immunizations, if any -->
+{% if existing_record.0.name != 'default'%}
+<div class="container">
+    <div class="row">
+		<div class="col-sm-12">
+        	<div class="card">
+                <div class="text-center">
+                	<div class="card-title">
+                		<h2>Immunization Record for {{child_name}}</h2>
+                	</div>
+                </div>
+                <div class="card-block">
+					<table class = "table table-hover">
+						<thead>
+							<tr>
+								<th>Vaccine</th>
+								<th>Date</th>
+								<th>Provider</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for field in existing_record %}
+							<tr>
+								<td>{{field.name}}</td>
+								<td>{{field.imdate}}</td>
+								<td>{{meddict|get_item:field.provider}}</td>
+							</tr>
+							{%	endfor %}
+						</tbody>
+					</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
-		            {{ link_form.date }}
-		            {% if link_form.date.errors %}
-		                {% for error in link_form.date.errors %}
-		                    {{ error|escape }}
-		                {% endfor %}
-		            {% endif %}
-		        </div>			
-			</p>
-	    {% endfor %}
+<!-- List out the form to add immunzations -->
+<div class="container">
+	<div class = "text-center" style="width:80%; margin: auto;">
+	  	<form name="immuniform" role="form" method="post">
+	  		<h1 class='text-center login-title'>Add immunizations to {{child_name}}'s record.</h1>
+	        <br>
+	        {% csrf_token %}
+	        <input type="hidden" name="child" value={{cid}}>
+	  		<div id="immunization_fields"></div>
+	   		<div class="col-sm-6 nopadding">
+		  		<div class="form-group">
+		    		<input type="text" class="form-control" id="vaccine" name="vaccine[]" value="" placeholder="Vaccine" required>
+		  		</div>
+			</div>
+			<div class="col-sm-6 nopadding">
+		  		<div class="form-group">
+		    		<div class="input-group">
+		      			<input type="date" class ="form-control" id="immundate" name="immundate[]" pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" required>
+		      			<div class="input-group-btn">
+		        			<button class="btn btn-primary" type="button"  onclick="immunization_fields();"> <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> </button>
+		      			</div>
+		    		</div>
+		  		</div>
+			</div>
+			<div class="clear"></div>
+	        <button class="btn btn-lg btn-primary btn-block" id= "submit" type="submit">Submit</button>
+	        <div class="text-center" style="margin-top: 1em">
+	            <a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+	        </div>
+		</form>
+  	</div>
+</div>	
+</body>
 
-        {% if Immunirecord.non_form_errors %}
-        	<p>
-	        {% for error in Immunirecord.non_form_errors %}
-	            {{ error|escape }}
-	        {% endfor %}
-	        </p>
-	        {% if Immunirecord.non_form_errors.0 == 'You need to submit at least one record.'%}
-	        	<a href="{%url 'addImmun'%}">Try Again</a>
-	        {% else %}
-	    	<input type="submit" value="Submit" class="button" />
-	    	{% endif %}
-
-	    {% else %}
-	    	<input type="submit" value="Submit" class="button" />
-	    {% endif %}
-	</form>
-
-<!-- Include formset plugin - including jQuery dependency -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="/static/jquery.formset.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 <script>
-    $('.immunirecord').formset({
-        addText: 'Add more',
-        deleteText: 'Remove'
+/*Function to add and remove fields*/
+var room = 1;
+function immunization_fields() {
+    room++;
+    var objTo = document.getElementById('immunization_fields')
+    var divtest = document.createElement("div");
+	divtest.setAttribute("class", "form-group removeclass"+room);
+	var rdiv = 'removeclass'+room;
+
+    divtest.innerHTML = '<div class="col-sm-6 nopadding"><div class="form-group"> <input type="text" class="form-control" id="vaccine" name="vaccine[]" value="" placeholder="Vaccine" required></div></div><div class="col-sm-6 nopadding"><div class="form-group"><div class="input-group"> <input type="date" class ="form-control" id="immundate" name="immundate[]"  pattern="(?:19|20)[0-9]{2}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1[0-9]|2[0-9])|(?:(?!02)(?:0[1-9]|1[0-2])-(?:30))|(?:(?:0[13578]|1[02])-31))" required> <div class="input-group-btn"> <button class="btn btn-danger" type="button" onclick="remove_immunization_fields('+ room +');"> <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> </button></div></div></div></div>';
+    
+    objTo.appendChild(divtest)
+}
+
+function remove_immunization_fields(rid) {
+	$('.removeclass'+rid).remove();
+}
+
+/*Check for duplicates among the vaccine names upon submision*/
+$('#submit').click(function () {
+        var valid = true;
+        $.each($('input[type="text"]'), function (index1, item1) {
+            $.each($('input[type="text"]').not(this), function (index2, item2) {
+                if ($(item1).val() == $(item2).val()) {
+                	/*if the item is a blank we delegate to other checking*/
+                	if ($(item1).val() != ''){
+	                    $(item1).css("border-color", "red");
+                    	valid = false;
+                    	alert("You've entered the same name more than once!");
+                	}
+                }
+            });
+        });
+        return valid;
     });
-</script>	
+</script>
 
 {% endblock %}
-
-

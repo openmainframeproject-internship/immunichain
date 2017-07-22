@@ -1,5 +1,4 @@
 """mysite URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
 Examples:
@@ -44,7 +43,6 @@ urlpatterns = [
     url(r'^failure/$', core_views.failure, name='failure'),
     url(r'^deny/$', core_views.deny, name='deny'),
     url(r'^deny/underage$', core_views.underage, name='underage'),
-
 
     url(r'^newchild/$', core_views.newchild, name='newchild'),
     url(r'^update/$', core_views.update, name='update'),

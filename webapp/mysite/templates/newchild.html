@@ -1,7 +1,108 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
-  <h2>Add a Child</h2>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 50%;
+    padding: 2em;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.9);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 1.5em;
+}
+.error{
+  color:red;
+  margin: auto;
+}
+a{
+    width: 100%;
+}
+option, .form-group{
+  height: auto;
+    font-family: 'Open Sans', sans-serif;
+/*    margin: 0 auto;*/
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <form class="form-horizontal" role="form" method="post">
+      {% csrf_token %}
+      <h1 class='text-center login-title'>Add a child.</h1>
+      <br>
+
+      {% for field in form %}
+        <div class="form-group">
+          <label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+            <div class="col-sm-9">
+                {{ field }}
+            </div>
+        </div>
+        {% for error in field.errors %}
+          <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+              <div class="col-sm-9 error">
+                {{ error }}
+              </div>
+          </div>
+        {% endfor %}
+      {% endfor %}
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+      <!-- Add div text-center to center the text!!! -->
+      <div class="text-center" style="margin-top: 1em">
+        <a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_full_name").attr('placeholder', "Please enter your child's full name.");
+        $("#id_username").attr('placeholder', '150 characters or fewer.');
+        $("#id_birthdate").attr('placeholder', 'Format: YYYY-MM-DD');
+        $("#id_address").attr('placeholder', "Please enter your child's address");
+
+        $("#id_full_name").attr('class', 'form-control');
+        $("#id_username").attr('class', 'form-control');
+        $("#id_birthdate").attr('class', 'form-control');
+        $("#id_address").attr('class', 'form-control');
+
+        $("#id_medproviders").attr('class', 'form-control');
+        $("#id_members").attr('class', 'form-control');
+    });
+</script>
+
+{% endblock %}
+
+<!-- PreBootstrap Form -->
+<!--   <h2>Add a Child</h2>
   <form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -19,4 +120,21 @@
     <button type="submit">Submit</button>
   </form><br>
   <a href="{% url 'home' %}"><button>Cancel</button></a>
-{% endblock %}
+
+
+
+
+        {% for error in form.non_field_errors %}
+        <div class= "form-group">
+          <div class= "error text-center">
+            {{ error }}
+          </div>
+        </div>
+      {% endfor %}
+
+    id_full_name
+    id_username
+    id_birthdate
+    id_address
+
+    id_medproviders -->

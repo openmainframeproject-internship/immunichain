@@ -1,6 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Uh-Oh!</h2>
-	<p>You do not have permission to do that!</p>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 20px;
+}
+.jumbotron {
+  margin-top: 1.1em;
+  font-family: 'Patua One', cursive;
+  background: rgba(255,255,255,0.8);
+/*  opacity: 0.9;*/
+}
+.jumbotron p{
+  text-align: right;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.5em;
+}
+.jumbotron div img{
+  width: auto;
+  height: 10em;
+}
+.row{
+  margin-bottom: 2em;
+}
+.jumbotron .row{
+  margin: 0 auto;
+  font-family: 'Patua One', cursive;
+  text-align: right;
+}
+.profile-img
+{
+/*    width: 96px;
+    height: 96px;
+    display: block;*/
+    opacity: 1;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.btn-primary{
+  background-color: #5383d3;
+}
+</style>	
+</head>
+<body>
+<div class="container-fluid">
+  <div class="jumbotron">
+    <div class='row'>
+      <div class='col-sm-9'>
+        <div class='row'>
+          <h1>Denied!</h1>
+        </div>
+        <div class='row'>
+          <p>You do not have permission to do that.</p>
+        </div>
+        <div class='row'>
+        	<a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Back to home</a>
+        </div>
+      </div>
+      <div class="col-sm-3" style="align-items: center">
+        <img class="profile-img" src="http://c1.staticflickr.com/5/4298/35959592061_ff851d8c62.jpg">
+     </div>
+    </div>
+  </div> 
+</div>	
+</body>
 {% endblock %}

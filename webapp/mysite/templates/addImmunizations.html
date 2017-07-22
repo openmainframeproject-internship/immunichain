@@ -1,18 +1,75 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Add Immunizations</h2>
-	<h3>Select child</h3>
-	<p>
-	{% if form.child_access.field.choices %}
-		<form action = "{% url 'addImmun_submit' %}" method="get">
-		{% csrf_token %}
-		{{form}}
-		<input type="submit" value="Submit" />
-		</form>
-	{%	else %}
-		<p>You currently don't have any children!</p>
-	{%	endif %}
-	</p>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 50%;
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 1.5em;
+}
+a{
+    width: 100%;
+}
+</style>	
+</head>
+<body>
+{% if form.child_access.field.choices|length > 1 %}
+    <div class="container">
+      <form class="form-horizontal" role="form" method="get" action = "{% url 'addImmun_submit' %}">
+        {% csrf_token %}
+        <h1 class='text-center login-title'>Add immunizations for:</h1>
+        <br>
+        {% for field in form %}
+          <div class="form-group">
+              {{ field }}
+          </div>
+        {% endfor %}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Continue</button>
+        <div class="text-center" style="margin-top: 1em">
+            <a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+        </div>
+      </form>
+    </div>
+{% else %}
+    <div class="container">
+      <form class="form-horizontal" role="form">
+        <h1 class='text-center login-title'>You do not have any children!</h1>
+        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+      </form>
+    </div>
+{% endif %}	
+</body>
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_child_access").attr('class', 'form-control');
+    });
+</script>
 
 {% endblock %}

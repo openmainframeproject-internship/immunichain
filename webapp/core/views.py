@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.forms.formsets import formset_factory
-from core.forms import SignUpForm, NameForm, NewChildForm, UpdateForm, Immunization, RequiredFormSet, SignUpForm_reassign
+from core.forms import SignUpForm, NameForm, NewChildForm, UpdateForm, SignUpForm_reassign
 from django.template.defaulttags import register
 from datetime import datetime
 import json
@@ -35,7 +34,7 @@ def viewchild(request):
 	user_role = request.user.profile.role
 	username = request.user.username
 	r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
-	CHILD_CHOICES = []
+	CHILD_CHOICES = [("","-----------")]
 	for child in r.json():
 		if user_role == 'GRDN':
 			if ("resource:ibm.wsc.immunichain.Guardian#"+username) == child['guardian']:
@@ -89,12 +88,12 @@ def viewchild(request):
 @login_required
 def auth_member_select(request):
 	if request.user.profile.role == 'GRDN':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
-			children.append((child['cid'], child['name']))
+			children.append((child['cid'], child['name']+", "+child['cid']))
 		if request.method == 'POST':
 			form = NameForm(children, request.POST)
 			if form.is_valid():
@@ -126,14 +125,14 @@ def auth_member_submit(request):
 			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.authMember", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
 
-		return render(request, 'auth_member_submit.html')
+		return redirect('success')
 	else:
 		return redirect('deny')
 
 @login_required
 def assignmed_select(request):
 	if request.user.profile.role == 'GRDN':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
@@ -170,14 +169,14 @@ def assignmed_submit(request):
 			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.assignMedProvider", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
 
-		return render(request, 'assignmed_submit.html')
+		return redirect('success')
 	else:
 		return redirect('deny')
 
 @login_required
 def deauth_member_select(request):
 	if request.user.profile.role == 'GRDN':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
@@ -217,19 +216,19 @@ def deauth_member_submit(request):
 			d = {"guardian": gid,"member": memid, "childform": cid}
 			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.removeMemberAuth", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
-		return render(request, 'deauth_member_submit.html')
+		return redirect('success')
 	else:
 		return redirect('deny')
 
 @login_required
 def update(request):
 	if request.user.profile.role == 'GRDN':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
-			children.append((child['cid'], child['name']))
+			children.append((child['cid'], child['name']+', '+child['cid']))
 		if request.method == 'POST':
 			form = UpdateForm(children, request.POST)
 			if form.is_valid():
@@ -256,7 +255,7 @@ def update(request):
 @login_required
 def addImmunizations(request):
 	if request.user.profile.role == 'HEAL':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
@@ -270,11 +269,13 @@ def addImmunizations(request):
 @login_required
 def addImmunizations_submit(request):
 	if request.user.profile.role == "HEAL":
+		# We reach here by addImmunizations and choose the childform
 		if request.method == "GET":
 			cid = request.GET.get('child_access')
+		#if this is a POST request, we have the form
 		else:
 			cid = request.POST["child"]
-		Immunirecord = formset_factory(Immunization, formset=RequiredFormSet)
+
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
@@ -287,25 +288,27 @@ def addImmunizations_submit(request):
 				r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'], verify=False)
 				r = r.json()
 				meddict[record['provider']] = r["name"]
-		renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,'Immunirecord': Immunirecord}
+		renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,}
+
 		if request.method == "POST":
-			formset = Immunirecord(request.POST)	#cleaning process starts here
-			if formset.is_valid():
-				immunizations = []
-				providerid = request.user.username
-				for form in formset:
-					name = form.cleaned_data.get('name')
-					date = form.cleaned_data.get('date')
-					if name and date:
-						d = {'name': name, 'provider': providerid, 'imdate':str(date)}
-						immunizations.append(d)
-				immunizations = json.dumps(immunizations)
-				d = {"childform": cid, "vaccines": immunizations}
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.addImmunizations", data=d, verify=False)
-				assert r.status_code == SUCCESS_CALL
+			immunizations = []
+			providerid = request.user.username
+			names = request.POST.getlist('vaccine[]')
+			dates = request.POST.getlist('immundate[]')
+
+			for x in zip(names,dates):
+				d = {'name': x[0], 'provider': providerid, 'imdate':str(x[1])}
+				immunizations.append(d)
+
+			immunizations = json.dumps(immunizations)
+			d = {"childform": cid, "vaccines": immunizations}
+			r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.addImmunizations", data=d, verify=False)
+			if r.status_code == SUCCESS_CALL:
 				return redirect('success')
 			else:
-				renderdict['Immunirecord'] = formset
+				return redirect('failure')
+
+		#Dynamic formset is a pain to implement, so I got rid of it
 		return render(request, 'addImmunizations_submit.html', renderdict)
 	else:
 		return redirect('deny')
@@ -344,7 +347,7 @@ def newchild(request):
 @login_required
 def reassign_select(request):
 	if request.user.profile.role == 'GRDN':
-		children = []
+		children = [("","-----------")]
 		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
@@ -368,7 +371,6 @@ def reassign_select(request):
 					return render(request, 'reassign_select.html', renderdict)
 				else:
 					return redirect('underage')
-					#	TODO: replace with a page explaining that the child is not old enough yet
 		else:
 			form = NameForm(children)
 		return render(request, 'reassign_select.html', {'form':form})
@@ -398,7 +400,7 @@ def reassign_submit(request):
 			d = {"oldguardian": request.user.username, "newguardian": username, "childform": cid}
 			r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.reassignGuardian", data=d, verify=False)
 			assert r.status_code == SUCCESS_CALL
-			return render(request, 'reassign_submit.html')
+			return redirect('success')
 		else:
 			renderdict = {'cid': cid, 'child_name': full_name, 'newform': form}
 		return render(request, 'reassign_select.html', renderdict)

@@ -1,22 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>{% block title %}IMMUNIchain - The Future of Healthcare, Today!{% endblock %}</title>
-  </head>
-  <body>
-    <header>
-      <h1 style="font-family: Arial ; color:blue; font-size: 2.25em">IMMUNIchain</h1>
+<head>
+  <title>IMMUNIchain - The Future of Healthcare, Today!</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans|Patua+One" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+    /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+      font-family: 'Patua One', cursive;
+      font: 'Patua One';
+      height: 80px; /*height of the background*/
+      padding: 20px 40px;
+    }
+    .navbar-brand{
+      font-size: 45px;
+    }
+    .navbar-brand span{
+      color: #5383d3;
+    }
+    .navbar-right li:last-child a{
+      font-weight: bold;
+      background-color: #3a3c3e;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="{% url 'home' %}">IMMUNI<span>chain</span></a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
       {% if user.is_authenticated %}
-        <a href="{% url 'home' %}">home</a> / <a href="{% url 'logout' %}">logout</a>
+        <li><a href="{% url 'home' %}">{{ user.profile.full_name }}</a></li>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
       {% else %}
-        <a href="{% url 'login' %}">login</a> / <a href="{% url 'signup' %}">signup</a>
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}">Sign Up</a></li>
       {% endif %}
-      <hr>
-    </header>
-    <main>
-      {% block content %}
-      {% endblock %}
-    </main>
-  </body>
+      </ul>
+    </div>
+  </div>
+</nav>
+</body>
+<main>
+  {% block content %}
+  {% endblock %}
+</main>
 </html>

@@ -1,45 +1,368 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Welcome, {{ user.profile.full_name }}!</h2>
-  <!-- <small>{{ user.username }}</small>-->
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 50%;
+    padding: 15px;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.9);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 20px;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
 
-  <!-- <p>Your role: {{ user.profile.role }}</p> -->
-  <p>Your children:
-    <ol style="list-style-type:square">
-      {% for field in r %}
-        <li><strong>Name</strong>: {{field.name}}, <strong>ID</strong>: {{field.cid}}</li>
-      {% endfor %}
-    </ol>
-  </p>
-  <p>What would you like to do today?
-  	<ol style="list-style-type:square">
-  	{% if user.profile.role == 'GRDN' %}
-      <li><a href="{% url 'viewchild' %}">View child's immunization record</a></li>
-      <li><a href="{% url 'auth_member_select' %}">Authorize member organizations</a></li>
-      <li><a href="{% url 'deauth_member_select' %}">Deauthorize member organizations</a></li>
-  		<li><a href="{% url 'assignmed_select' %}">Add medical providers</a></li>
-      <li><a href="{% url 'update' %}">Update my child's information</a></li>
-      <li><a href="{% url 'newchild' %}">Add a child</a></li>
-      <li><a href="{% url 'reassign_select' %}">Authorize child access</a></li>
-  	{% elif user.profile.role == 'MEMB' %}
-  		<li><a href="{% url 'viewchild' %}">View child's immunization record</a></li>
-  	{% else %}
-  		<li><a href="{% url 'viewchild' %}">View child's immunization record</a></li>
-  		<li><a href="{% url 'addImmun' %}">Add immunization to child's record</a></li>
-  	{%endif%}
-  	</ol>
-  </p>
-{% endblock %}
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+  margin-top: 20px;
+}
+.card {
+    font-size: 1em;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    border-radius: .28571429rem;
+    box-shadow: 0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5;
+/*    margin-bottom: 2em;*/
+}
+.card-block {
+    font-size: 1em;
+    position: relative;
+    margin: 0;
+    padding: 1em;
+    border: none;
+    border-top: 1px solid rgba(34, 36, 38, .1);
+    box-shadow: none;
+    background: #fff;
+/*    opacity:0.9;*/
+}
 
+.card-img-top {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
 
+.card-title {
+  font-weight: 400;
+  font-size: 2em;
+    line-height: 0.5em;
+}
 
-      
-      
+.card-text , td{
+    clear: both;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+    margin-bottom: .5em;
+    color: rgba(0, 0, 0, .68);
+}
 
-      
-      
+.card-footer {
+  font-family: 'Patua One', cursive;
+    font-size: 1em;
+    font-weight: 400;
+    position: static;
+    top: 0;
+    left: 0;
+    max-width: 100%;
+    padding: .75em 1em;
+    color: #555;
+    border-top: 1px solid rgba(0, 0, 0, .05) !important;
+/*    background: #fff;*/
+/*    opacity: 0.9;*/
+  background: rgba(255,255,255,0.8);
+}
+
+.card-inverse .btn {
+    border: 1px solid rgba(0, 0, 0, .05);
+}
+.text-bold {
+    font-weight: 700;
+}
+
+.meta, th{
+    font-size: 1.5em;
+    color: rgba(0, 0, 0, .4);
+}
+
+.meta a, th{
+    text-decoration: none;
+    color: rgba(0, 0, 0, .4);
+}
+
+.meta a:hover, th:hover{
+    color: rgba(0, 0, 0, .87);
+}
+.card-block{
+  font-family: 'Patua One', cursive;
+}
+.col-sm-12{
+  margin-top: 20px;
+}
+.jumbotron {
+  margin-top: 1.1em;
+  font-family: 'Patua One', cursive;
+  background: rgba(255,255,255,0.8);
+/*  opacity: 0.9;*/
+}
+.jumbotron p{
+  text-align: right;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.5em;
+}
+.jumbotron div img{
+  width: auto;
+  height: 10em;
+}
+.fa{
+  margin-top: 0.1em;
+  font-size: 10em;
+  margin-bottom: 0.1em;
+}
+.row{
+  margin-bottom: 2em;
+}
+.jumbotron .row{
+  margin: 0 auto;
+  font-family: 'Patua One', cursive;
+  text-align: right;
+}
+.profile-img
+{
+/*    width: 96px;
+    height: 96px;
+    display: block;*/
+    opacity: 1;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+.btn-primary{
+  background-color: #5383d3;
+}
+</style>
+</head>
+
+<div class="container-fluid">
+  <div class="jumbotron">
+    <div class='row'>
+      <div class='col-sm-9'>
+        <div class='row'>
+          <h1>Welcome, {{ user.profile.full_name }}!</h1>
+        </div>
+        <div class='row'>
+          <p>What would you like to do today?</p>
+        </div>
+      </div>
+      <div class="col-sm-3" style="align-items: center">
+        <img class="profile-img" src="http://c1.staticflickr.com/5/4305/35959593301_a1e5fcfa8b.jpg">
+<!--         <img src="https://s-media-cache-ak0.pinimg.com/originals/b6/8d/7f/b68d7fd7c3e0d81f5a1aaae9766a9b57.jpg">
+ -->      </div>
+    </div>
+  </div> 
+</div>
+
+<div class="container-fluid">
+  {% if user.profile.role == 'GRDN' %}
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="card">
+        <div class="card-img-top" style="background: rgba(31,112,193,0.9);">
+              <center><i class = "fa fa-database" style="color:rgb(255,255,255)"></i></center>
+        </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">View Record</h4>
+            <div class="card-text">
+              View the the child records for which you have been authorized to access.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'viewchild' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
     
-      
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(109,187,80,0.9);">
+            <center><i class = "fa fa-handshake-o" style="color:rgb(44,91,163);"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Authorize Member</h4>
+            <div class="card-text">
+              Authorize a member to access the immunization information on your child's record.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'auth_member_select' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
 
-      
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(255,0,0,0.9);">
+            <center><i class = "fa fa-hand-paper-o" style="color:#ffffff;"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Deauthorize Member</h4>
+            <div class="card-text">
+              Remove access authorization for a member from your child's record.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'deauth_member_select' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(0,75,133,0.9);">
+            <center><i class = "fa fa-user-md" style="color:#7EBFE9"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Add Medical Provider</h4>
+            <div class="card-text">
+              Authorize medical providers to access your child's record.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'assignmed_select' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class = "row">
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(87,6,140,0.9);">
+            <center><i class = "fa fa-pencil" style="color:#FFFFFF"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Update Child</h4>
+            <div class="card-text">
+              Update the personal information on your child's record.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'update' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>     
+
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(120,0,25,0.9);">
+            <center><i class = "fa fa-child" style="color:#FDCC31"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Add a Child</h4>
+            <div class="card-text">
+              Create child records for each of your children.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'newchild' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background: rgba(21,54,103,0.9);">
+            <center><i class = "fa fa-graduation-cap" style="color:#FB6C00"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Authorize Child</h4>
+            <div class="card-text">
+              Grant your child access to his/her own record at the age of majority.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'reassign_select' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div> 
+    </div>
+  {% elif user.profile.role == 'HEAL' %}
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="card">
+        <div class="card-img-top" style="background: rgba(31,112,193,0.9)">
+              <center><i class = "fa fa-database" style="color:#fff"></i></center>
+        </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">View Record</h4>
+            <div class="card-text">
+              View the the child records for which you have been authorized to access.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'viewchild' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="card">
+          <div class="card-img-top" style="background:rgba(153,0,0,0.9);">
+            <center><i class = "fa fa-medkit" style="color:#fff"></i></center>
+          </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">Add Immunization</h4>
+            <div class="card-text">
+              Add immunizations to the records you are authorized to access.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'addImmun' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>   
+    </div>
+
+  {% else %}
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="card">
+        <div class="card-img-top" style="background: rgba(31,112,193,0.9)">
+              <center><i class = "fa fa-database" style="color:#fff"></i></center>
+        </div>
+          <div class="card-block">
+            <h4 class="card-title mt-3">View Record</h4>
+            <div class="card-text">
+              View the the child records for which you have been authorized to access.
+            </div>
+          </div>
+        <div class="card-footer">
+          <a href="{% url 'viewchild' %}" class="btn btn-primary">Continue</a>
+        </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

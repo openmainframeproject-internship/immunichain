@@ -1,12 +1,164 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Authorize Child Access</h2>
-	<h3 style="color: red">Keep in mind that giving your child access to his/her record will also release the record from your account.</h3>
-	<p>
+<head>
+<style>
+body {
+  background-image: url("https://s-media-cache-ak0.pinimg.com/736x/e2/32/1c/e2321c37ed480373ee926911d4ecaee7--true-meme-meme-humor.jpg");
+  background-color: #cccccc;
+}
+*[role="form"] {
+    width: 80%;
+    padding: 2em;
+    margin: 0 auto;
+    background: rgba(255,255,255,0.9);
+    border-radius: 0.3em;
+    font-family: 'Patua One', cursive;
+    margin-bottom: 1.5em;
+}
+.login-title
+{
+    color: #555;
+    font-weight: 400;
+    display: block;
+}
+#id_child_access {
+    height: auto;
+    font-family: 'Open Sans', sans-serif;
+    margin: 0 auto;
+    width: 80%;
+}
+.control-label, .col-sm-9{
+  font-family: 'Open Sans', sans-serif;
+}
+.container{
+/*  margin-top: 1.5em;
+*/}
+.error{
+  color:red;
+  margin: auto;
+}
+.jumbotron {
+  margin-top: 1.1em;
+  font-family: 'Patua One', cursive;
+  background: rgba(255,255,255,0.8);
+/*  opacity: 0.9;*/
+}
+.jumbotron p{
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.5em;
+}
+.jumbotron div img{
+  width: auto;
+  height: 10em;
+}
+.jumbotron .row{
+  margin: 0 auto;
+  font-family: 'Patua One', cursive;
+  text-align: right;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container-fluid">
+  <div class="jumbotron">
+    <div class='row'>
+        <div class='text-center'>
+          <h1 style="color:red">Warning</h1>
+        </div>
+        <div class='text-center'>
+          <p>Keep in mind that giving your child access to his/her record will also release the record from your account.</p>
+        </div>
+    </div>
+  </div> 
+</div>
+
+{% if form %}
+	<!-- Select child to add members to -->
+	{% if form.child_access.field.choices|length > 1 %}
+	    <div class="container">
+	      <form class="form-horizontal" role="form" method="post">
+	        {% csrf_token %}
+	        <h1 class='text-center login-title'>Select child to give access to:</h1>
+	        <br>
+	        {% for field in form %}
+	          <div class="form-group">
+	              {{ field }}
+	          </div>
+	        {% endfor %}
+	        <button class="btn btn-lg btn-primary btn-block" type="submit">Continue</button>
+			<div class="text-center" style="margin-top: 1em">
+        		<a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+	      	</div>
+	      </form>
+	    </div>
+	{% else %}
+	    <div class="container">
+	      <form class="form-horizontal" role="form">
+	        <h1 class='text-center login-title'>You do not have any children!</h1>
+	        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+	      </form>
+	    </div>
+	{% endif %}
+{% else %}
+	<!-- Add Member Organizations -->
+	<div class="container">
+		<form class="form-horizontal" role="form" action = "{% url 'reassign_submit' %}" method="post">
+			{% csrf_token %}
+			<h1 class='text-center login-title'>Delegate record to {{child_name}}.</h1>
+			<br>
+			<input type="hidden" name="child[]" value="{{cid}}">
+			<input type="hidden" name="child[]" value="{{child_name}}">
+	        {% for field in newform %}
+          		<div class="form-group">
+        			{% if field.auto_id != 'id_password2'%}
+         				<label class="col-sm-3 control-label">{{ field.label_tag }}</label>
+    				{% else %}
+          				<label class="col-sm-3 control-label">Confirm Password:</label>
+        			{% endif %}
+              		<div class="col-sm-9">
+              			{{ field }}
+              		</div>
+	          	</div>
+      			{% for error in field.errors %}
+					<div class="form-group">
+          				<label class="col-sm-3 control-label"></label>
+            			<div class="col-sm-9 error">
+              				{{ error }}
+            			</div>
+        			</div>
+      			{% endfor %}
+	        {% endfor %}
+	        <button class="btn btn-lg btn-primary btn-block" type="submit">Submit</button>
+			<div class="text-center" style="margin-top: 1em">
+    			<a href="{% url 'home' %}" style="font-family: 'Open Sans', sans-serif;">Cancel</a>
+      		</div>
+		</form>
+	</div>
+{% endif %}	
+</body>
+
+<script type="text/javascript" >
+    $(document).ready(function(){
+        $("#id_username").attr('class', 'form-control');
+        $("#id_password1").attr('class', 'form-control');
+        $("#id_password2").attr('class', 'form-control');
+
+        $("#id_username").attr('placeholder', '{{newform.username.help_text}}');
+        $("#id_password1").attr('placeholder', 'Your password must contain at least 8 characters.');
+        $("#id_password2").attr('placeholder', '{{newform.password2.help_text}}');
+        $("#id_child_access").attr('class', 'form-control');
+    });
+</script>
+{% endblock %}
+
+<!-- PreBootstrap Form -->
+<!-- 	<p>
 		{% if form %}
 			<h3>Select child</h3>
-			{% if form.child_access.field.choices %}
+			{% if form.child_access.field.choices|length > 1 %}
 				<form method="post">
 				{% csrf_token %}
 				{{form}}
@@ -16,7 +168,7 @@
 				<p>You currently don't have any children!</p>
 			{%	endif %}
 		{% else %}
-			<h3>Authorize access for {{child_name}}</h3>
+			<h3>Delegate access to {{child_name}}</h3>
 			<form action = "{% url 'reassign_submit' %}" method="post">
 				{% csrf_token %}
 				<input type="hidden" name="child[]" value="{{cid}}">
@@ -36,6 +188,4 @@
     			<button type="submit">Sign up</button>
 			</form>
 		{% endif %}
-	</p>
-
-{% endblock %}
+	</p> -->
