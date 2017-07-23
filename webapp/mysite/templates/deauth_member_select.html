@@ -115,37 +115,3 @@ option, .form-group{
 </script>
 
 {% endblock %}
-
-<!-- PreBootstrap Code -->
-<!-- 	<h2>Deauthorize Member Organization</h2>
-	<p>
-		{% if form %}
-			<h3>Select child</h3>
-			{% if form.child_access.field.choices %}
-				<form method="post">
-				{% csrf_token %}
-				{{form}}
-				<input type="submit" value="Submit" />
-				</form>
-			{%	else %}
-				<p>You currently don't have any children!</p>
-			{%	endif %}
-		{% else %}
-			{% if avail_members %}
-				<form action = "{% url 'deauth_member_submit' %}" method="post">
-				<h3>Remove access to {{child_name}}'s record</h3>
-				{% csrf_token %}
-				<input type="hidden" name="child" value={{cid}}>
-				<select required name="newmember">
-				<option value="">-----------</option>
-				{% for name, username in avail_members %}
-					<option value={{username}}>{{name}}</option>
-				</select>
-				{% endfor %}
-				<button type="submit">Remove member authorization</button>
-				</form>
-			{% else %}
-				{{child_name}} is not in any member organization!
-			{% endif %}
-		{% endif %}
-	</p> -->

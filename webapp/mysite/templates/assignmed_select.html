@@ -107,33 +107,3 @@ option, .form-group{
 </script>
 
 {% endblock %}
-
-<!-- PreBootstrap Form -->
-<!-- 	<h2>Assign a Medical Provider</h2>
-	<p>
-		{% if form %}
-			<h3>Select child</h3>
-			{% if form.child_access.field.choices %}
-				<form method="post">
-				{% csrf_token %}
-				{{form}}
-				<input type="submit" value="Submit" />
-				</form>
-			{%	else %}
-				<p>You currently don't have any children!</p>
-			{%	endif %}
-		{% else %}
-			<form action = "{% url 'assignmed_submit' %}" method="post">
-				<h3>Assign Medical Provider for {{child_name}}</h3>
-				{% csrf_token %}
-				<input type="hidden" name="child" value={{cid}}>
-				<select required name="newmed">
-				<option value="">-----------</option>
-				{% for name, username in avail_medproviders %}
-					<option value={{username}}>{{name}}</option>
-				{% endfor %}
-				</select>
-				<button type="submit">Assign medical provider</button>
-			</form>
-		{% endif %}
-	</p> -->

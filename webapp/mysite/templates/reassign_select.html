@@ -154,39 +154,3 @@ body {
     });
 </script>
 {% endblock %}
-
-<!-- PreBootstrap Form -->
-<!-- 	<p>
-		{% if form %}
-			<h3>Select child</h3>
-			{% if form.child_access.field.choices|length > 1 %}
-				<form method="post">
-				{% csrf_token %}
-				{{form}}
-				<input type="submit" value="Submit" />
-				</form>
-			{%	else %}
-				<p>You currently don't have any children!</p>
-			{%	endif %}
-		{% else %}
-			<h3>Delegate access to {{child_name}}</h3>
-			<form action = "{% url 'reassign_submit' %}" method="post">
-				{% csrf_token %}
-				<input type="hidden" name="child[]" value="{{cid}}">
-				<input type="hidden" name="child[]" value="{{child_name}}">
-    			{% for field in newform %}
-      				<p>
-        			{{ field.label_tag }}<br>
-        			{{ field }}
-        			{% if field.help_text %}
-          				<small style="color: grey">{{ field.help_text }}</small>
-        			{% endif %}
-       				{% for error in field.errors %}
-          				<p style="color: red">{{ error }}</p>
-        			{% endfor %}
-      				</p>
-    			{% endfor %}
-    			<button type="submit">Sign up</button>
-			</form>
-		{% endif %}
-	</p> -->
