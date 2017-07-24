@@ -58,6 +58,9 @@ body {
   font-family: 'Patua One', cursive;
   text-align: right;
 }
+a{
+    width: 100%;
+}
 </style>
 </head>
 
@@ -96,12 +99,12 @@ body {
 	      </form>
 	    </div>
 	{% else %}
-	    <div class="container">
-	      <form class="form-horizontal" role="form">
-	        <h1 class='text-center login-title'>You do not have any children!</h1>
-	        <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
-	      </form>
-	    </div>
+      <div class="container">
+        <form class="form-horizontal" role="form">
+          <h1 class='text-center login-title'>You do not have any children!</h1>
+          <a href="{% url 'home' %}" class="btn btn-primary">Back</a>
+        </form>
+      </div>
 	{% endif %}
 {% else %}
 	<!-- Add Member Organizations -->
