@@ -14,12 +14,13 @@ LEGAL_AGE = 18.0
 guardian_prefix = 'resource:ibm.wsc.immunichain.Guardian#'
 mprovider_prefix = 'resource:ibm.wsc.immunichain.MedProvider#'
 memberorg_prefix = 'resource:ibm.wsc.immunichain.Member#'
+rest_prefix = 'https://148.100.4.163:3000/api/'
 
 # Create your views here.
 @login_required
 def home(request):
 	user_role = request.user.profile.role
-	h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+	h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 	h = h.json()
 	if user_role == 'GRDN':
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
@@ -33,7 +34,7 @@ def home(request):
 def viewchild(request):
 	user_role = request.user.profile.role
 	username = request.user.username
-	r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+	r = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 	CHILD_CHOICES = [("","-----------")]
 	for child in r.json():
 		if user_role == 'GRDN':
@@ -59,23 +60,23 @@ def viewchild(request):
 			for provider in providers:
 				if provider not in userdict.keys():
 					garbage,lookup=provider.split("#",1)
-					r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+lookup, verify=False)
+					r = requests.get(rest_prefix + "ibm.wsc.immunichain.MedProvider/"+lookup, verify=False)
 					r = r.json()
 					userdict[provider] = r["name"]
 			for member in members:
 				if member not in userdict.keys():
 					garbage,lookup=member.split("#",1)
-					r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Member/"+lookup, verify=False)
+					r = requests.get(rest_prefix + "ibm.wsc.immunichain.Member/"+lookup, verify=False)
 					r = r.json()
 					userdict[member] = r["name"]
 			if guardian not in userdict.keys():
 				garbage,lookup=guardian.split("#",1)
-				r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Guardian/"+lookup, verify=False)
+				r = requests.get(rest_prefix + "ibm.wsc.immunichain.Guardian/"+lookup, verify=False)
 				r = r.json()
 				userdict[guardian] = r["name"]
 			for record in vaccines:
 				if record['provider'] not in userdict.keys() and record['provider']!='default':
-					r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'], verify=False)
+					r = requests.get(rest_prefix + "ibm.wsc.immunichain.MedProvider/"+record['provider'], verify=False)
 					r = r.json()
 					userdict[record['provider']] = r["name"]
 
@@ -89,7 +90,7 @@ def viewchild(request):
 def auth_member_select(request):
 	if request.user.profile.role == 'GRDN':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
@@ -100,7 +101,7 @@ def auth_member_select(request):
 				cid = form.cleaned_data.get('child_access')
 				chosen = (item for item in r if item["cid"] == cid).next()
 				child_name = chosen["name"]			
-				r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Member", verify=False)
+				r = requests.get(rest_prefix + "ibm.wsc.immunichain.Member", verify=False)
 				avail_members = [(d['name'], d['memid']) for d in r.json()]
 				renderdict = {'cid': cid, 'child_name': child_name, 'avail_members': avail_members}
 				return render(request, 'auth_member_select.html', renderdict)
@@ -115,14 +116,14 @@ def auth_member_submit(request):
 	if request.user.profile.role == 'GRDN' and request.method == 'POST':
 		memid = request.POST['newmember']
 		cid = request.POST["child"]
-		r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform/"+cid, verify=False)
+		r = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform/"+cid, verify=False)
 		r = r.json()
 		existing_members = r["members"]
 
 		if (memberorg_prefix+memid) not in existing_members:
 			gid = request.user.username
 			d = {"guardian": gid,"member": memid, "childform": cid}
-			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.authMember", data=d, verify=False)
+			make = requests.post(rest_prefix + "ibm.wsc.immunichain.authMember", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
 
 		return redirect('success')
@@ -133,7 +134,7 @@ def auth_member_submit(request):
 def assignmed_select(request):
 	if request.user.profile.role == 'GRDN':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
@@ -144,7 +145,7 @@ def assignmed_select(request):
 				cid = form.cleaned_data.get('child_access')
 				chosen = (item for item in r if item["cid"] == cid).next()
 				child_name = chosen["name"]			
-				r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider", verify=False)
+				r = requests.get(rest_prefix + "ibm.wsc.immunichain.MedProvider", verify=False)
 				avail_medproviders = [(d['name'], d['medid']) for d in r.json()]
 				renderdict = {'cid': cid, 'child_name': child_name, 'avail_medproviders': avail_medproviders}
 				return render(request, 'assignmed_select.html', renderdict)
@@ -159,14 +160,14 @@ def assignmed_submit(request):
 	if request.user.profile.role == 'GRDN' and request.method == 'POST':
 		medid = request.POST['newmed']
 		cid = request.POST["child"]
-		r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform/"+cid, verify=False)
+		r = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform/"+cid, verify=False)
 		r = r.json()
 		existing_medproviders = r["medproviders"]
 
 		if (mprovider_prefix+medid) not in existing_medproviders:
 			gid = request.user.username
 			d = {"guardian": gid,"medprovider": medid, "childform": cid}
-			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.assignMedProvider", data=d, verify=False)
+			make = requests.post(rest_prefix + "ibm.wsc.immunichain.assignMedProvider", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
 
 		return redirect('success')
@@ -177,7 +178,7 @@ def assignmed_submit(request):
 def deauth_member_select(request):
 	if request.user.profile.role == 'GRDN':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
@@ -192,7 +193,7 @@ def deauth_member_select(request):
 				cleaned = [s.replace(memberorg_prefix, '') for s in current_members]
 				avail_members=[]
 				for memberid in cleaned:
-					user = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Member/"+memberid, verify=False)
+					user = requests.get(rest_prefix + "ibm.wsc.immunichain.Member/"+memberid, verify=False)
 					user = user.json()
 					avail_members.append((user['name'], memberid))
 				renderdict = {'cid': cid, 'child_name': child_name, 'avail_members': avail_members}
@@ -208,13 +209,13 @@ def deauth_member_submit(request):
 	if request.user.profile.role == 'GRDN' and request.method == 'POST':
 		memid = request.POST['newmember']
 		cid = request.POST["child"]
-		r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform/"+cid, verify=False)
+		r = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform/"+cid, verify=False)
 		r = r.json()
 		existing_members = r["members"]
 		if (memberorg_prefix+memid) in existing_members:
 			gid = request.user.username
 			d = {"guardian": gid,"member": memid, "childform": cid}
-			make = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.removeMemberAuth", data=d, verify=False)
+			make = requests.post(rest_prefix + "ibm.wsc.immunichain.removeMemberAuth", data=d, verify=False)
 			assert make.status_code == SUCCESS_CALL
 		return redirect('success')
 	else:
@@ -224,7 +225,7 @@ def deauth_member_submit(request):
 def update(request):
 	if request.user.profile.role == 'GRDN':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
@@ -241,7 +242,7 @@ def update(request):
 					d = {'childform': cid, 'name':name }
 				else:
 					d = {'childform': cid, 'address':address, 'name':name }
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.updateChildForm", data=d, verify=False)
+				r = requests.post(rest_prefix + "ibm.wsc.immunichain.updateChildForm", data=d, verify=False)
 				if r.status_code == SUCCESS_CALL:
 					return redirect('success')
 				else:
@@ -256,7 +257,7 @@ def update(request):
 def addImmunizations(request):
 	if request.user.profile.role == 'HEAL':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
 		for child in r:
@@ -276,7 +277,7 @@ def addImmunizations_submit(request):
 		else:
 			cid = request.POST["child"]
 
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: (mprovider_prefix+request.user.username) in d['medproviders'], h ))
 		chosen = (item for item in r if item["cid"] == cid).next()
@@ -285,7 +286,7 @@ def addImmunizations_submit(request):
 		meddict = {}
 		for record in existing_record:
 			if record['provider'] not in meddict.keys() and record['provider']!="default":
-				r = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider/"+record['provider'], verify=False)
+				r = requests.get(rest_prefix + "ibm.wsc.immunichain.MedProvider/"+record['provider'], verify=False)
 				r = r.json()
 				meddict[record['provider']] = r["name"]
 		renderdict = {'cid': cid, 'child_name': child_name, 'existing_record': existing_record, "meddict": meddict,}
@@ -302,7 +303,7 @@ def addImmunizations_submit(request):
 
 			immunizations = json.dumps(immunizations)
 			d = {"childform": cid, "vaccines": immunizations}
-			r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.addImmunizations", data=d, verify=False)
+			r = requests.post(rest_prefix + "ibm.wsc.immunichain.addImmunizations", data=d, verify=False)
 			if r.status_code == SUCCESS_CALL:
 				return redirect('success')
 			else:
@@ -332,7 +333,7 @@ def newchild(request):
 				default = json.dumps([{"name": "default", "provider": "default", "imdate": "default"}])
 				d = {'cid':cid, 'name':name, 'address':address, "guardian":guardian, 'dob':dob, 
 				'medproviders': medproviders, 'members':members, "immunizations": default }
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", data=d, verify=False)
+				r = requests.post(rest_prefix + "ibm.wsc.immunichain.Childform", data=d, verify=False)
 				if r.status_code == SUCCESS_CALL:
 					return redirect('success')
 				else:
@@ -348,7 +349,7 @@ def newchild(request):
 def reassign_select(request):
 	if request.user.profile.role == 'GRDN':
 		children = [("","-----------")]
-		h = requests.get("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Childform", verify=False)
+		h = requests.get(rest_prefix + "ibm.wsc.immunichain.Childform", verify=False)
 		h = h.json()
 		r = list(filter(lambda d: d['guardian'] == (guardian_prefix+request.user.username), h ))
 		for child in r:
@@ -388,7 +389,7 @@ def reassign_submit(request):
 			print "I'm valid"
 			username = form.cleaned_data.get('username')
 			d = {'gid': username, 'name': full_name}
-			r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Guardian", data=d, verify=False)
+			r = requests.post(rest_prefix + "ibm.wsc.immunichain.Guardian", data=d, verify=False)
 			assert r.status_code == SUCCESS_CALL
 			user = form.save()
 			user.refresh_from_db()
@@ -398,7 +399,7 @@ def reassign_submit(request):
 			raw_password= form.cleaned_data.get('password1')
 			user = authenticate(username=user.username,password=raw_password)
 			d = {"oldguardian": request.user.username, "newguardian": username, "childform": cid}
-			r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.reassignGuardian", data=d, verify=False)
+			r = requests.post(rest_prefix + "ibm.wsc.immunichain.reassignGuardian", data=d, verify=False)
 			assert r.status_code == SUCCESS_CALL
 			return redirect('success')
 		else:
@@ -417,15 +418,15 @@ def signup(request):
 			assert role in ["GRDN","MEMB","HEAL"]
 			if role == 'GRDN':
 				d = {'gid': username, 'name': full_name}
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Guardian", data=d, verify=False)
+				r = requests.post(rest_prefix + "ibm.wsc.immunichain.Guardian", data=d, verify=False)
 				assert r.status_code == SUCCESS_CALL
 			elif role == "MEMB":
 				d = {'memid': username, 'name': full_name}
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.Member", data=d, verify=False)
+				r = requests.post(rest_prefix + "ibm.wsc.immunichain.Member", data=d, verify=False)
 				assert r.status_code == SUCCESS_CALL
 			else:
 				d = {'medid': username, 'name': full_name}
-				r = requests.post("https://148.100.4.163:3000/api/ibm.wsc.immunichain.MedProvider", data=d, verify=False)
+				r = requests.post(rest_prefix + "ibm.wsc.immunichain.MedProvider", data=d, verify=False)
 				assert r.status_code == SUCCESS_CALL
 			user = form.save()
 			user.refresh_from_db()
