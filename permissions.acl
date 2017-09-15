@@ -1,10 +1,98 @@
 /**
- * Sample access control list.
+ * Sample access control list for the IMMUNIchain network.
  */
-rule Default {
-    description: "Allow all participants access to all resources"
-    participant: "ANY"
-    operation: ALL
-    resource: "ibm.wsc.immunichain"
+rule CreateChild {
+    description: "Allow the guardian to create child assets in the network"
+    participant: "ibm.wsc.immunichain.Guardian"
+    operation: CREATE
+    resource: "ibm.wsc.immunichain.Childform"
     action: ALLOW
 }
+
+rule UpdatePersonal {
+    description: "Allow the guardian update the child's personal info"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.updateChildForm"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule AssignProvider {
+    description: "Allow the guardian to add medical providers"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.assignMedProvider"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule AuthMembers {
+    description: "Allow the guardian to authorize member organizations"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.authMember"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule DeauthMembers {
+    description: "Allow the guardian to deauthorize member organizations"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.removeMemberAuth"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule Reassign {
+    description: "Allow the guardian to reassign their children (if of age)"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.reassignGuardian"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule addImmunizations {
+    description: "Allow medical providers to add immunizations to their child"
+    participant(m): "ibm.wsc.immunichain.MedProvider"
+    operation: UPDATE
+    resource(c): "ibm.wsc.immunichain.Childform"
+    transaction(tx): "ibm.wsc.immunichain.addImmunizations"
+    condition: (m.getIdentifier() in c.members.getIdentifier())
+    action: ALLOW
+}
+
+rule GuardianRead {
+    description: "Allow guardians to view their own child record"
+    participant(g): "ibm.wsc.immunichain.Guardian"
+    operation: READ
+    resource(c): "ibm.wsc.immunichain.Childform"
+    condition: (c.guardian.getIdentifier() == g.getIdentifier())
+    action: ALLOW
+}
+
+rule MedRead {
+    description: "Allow providers to view their own child record"
+    participant(m): "ibm.wsc.immunichain.MedProvider"
+    operation: READ
+    resource(c): "ibm.wsc.immunichain.Childform"
+    condition: (m.getIdentifier() in c.members.getIdentifier())
+    action: ALLOW
+}
+
+rule MemberRead {
+    description: "Allow organizations to view their own child record for which they are authorized to view"
+    participant(m): "ibm.wsc.immunichain.Member"
+    operation: READ
+    resource(c): "ibm.wsc.immunichain.Childform"
+    condition: (m.getIdentifier() in c.members.getIdentifier())
+    action: ALLOW
+}
+
